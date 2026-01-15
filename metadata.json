@@ -1,0 +1,7 @@
+{
+  "name": "Copy of MaternalCare Plus",
+  "description": "Una plataforma integral de acompañamiento para madres gestantes que ofrece seguimiento de salud, análisis de exámenes por IA, tienda especializada y bienestar.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
