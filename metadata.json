@@ -1,7 +1,8 @@
 {
-  "name": "Copy of MaternalCare Plus",
-  "description": "Una plataforma integral de acompañamiento para madres gestantes que ofrece seguimiento de salud, análisis de exámenes por IA, tienda especializada y bienestar.",
+  "name": "Ceres - Ser Mujer",
+  "description": "Ecografía en casa y acompañamiento integral para la mujer gestante. Salud, vida y bienestar potenciado por IA.",
   "requestFramePermissions": [
-    "camera"
+    "camera",
+    "geolocation"
   ]
 }

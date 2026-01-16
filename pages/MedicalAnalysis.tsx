@@ -1,6 +1,6 @@
 
 import React, { useState, useRef } from 'react';
-import { Camera, FileText, Send, Sparkles, Loader2, AlertCircle } from 'lucide-react';
+import { Camera, FileText, Send, Sparkles, Loader2, AlertCircle, ShieldCheck } from 'lucide-react';
 import { analyzeExam } from '../services/geminiService';
 
 const MedicalAnalysis: React.FC = () => {
@@ -38,35 +38,32 @@ const MedicalAnalysis: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-16 space-y-10">
-      <div className="text-center space-y-4">
-        <div className="inline-flex items-center gap-2 px-4 py-1 bg-purple-100 text-purple-600 rounded-full text-xs font-bold uppercase tracking-widest">
-          <Sparkles className="w-3 h-3" />
-          Inteligencia Artificial
+    <div className="max-w-4xl mx-auto px-4 py-20 space-y-14">
+      <div className="text-center space-y-6">
+        <div className="inline-flex items-center gap-3 px-5 py-2 bg-ceres-mint text-ceres-primary rounded-full text-[10px] font-bold uppercase tracking-[0.25em]">
+          <Sparkles className="w-4 h-4" />
+          Inteligencia Artificial Médica
         </div>
-        <h1 className="text-4xl font-serif font-bold text-slate-900">Lectura de Exámenes</h1>
-        <p className="text-slate-500 max-w-lg mx-auto leading-relaxed">
-          Nuestra IA te ayuda a entender tus resultados de laboratorio de forma fácil y humana.
+        <h1 className="text-4xl md:text-5xl font-serif font-bold text-slate-900 tracking-tight">Análisis de Laboratorio</h1>
+        <p className="text-slate-500 max-w-xl mx-auto leading-relaxed font-medium">
+          Nuestra tecnología IA te ayuda a comprender tus resultados de exámenes en lenguaje humano y profesional.
         </p>
       </div>
 
-      <div className="bg-white rounded-[40px] border border-pink-100 shadow-2xl overflow-hidden shadow-purple-100/50">
-        <div className="p-10 md:p-12 space-y-8">
+      <div className="bg-white rounded-[60px] border border-ceres-mint shadow-2xl overflow-hidden shadow-ceres-primary/5">
+        <div className="p-12 md:p-16 space-y-10">
           {!image ? (
             <div 
               onClick={() => fileInputRef.current?.click()}
-              className="border-4 border-dashed border-pink-50 rounded-[32px] p-16 text-center cursor-pointer hover:border-purple-200 hover:bg-purple-50/30 transition-all group relative overflow-hidden"
+              className="border-4 border-dashed border-ceres-mint rounded-[40px] p-20 text-center cursor-pointer hover:border-ceres-primary hover:bg-ceres-light transition-all group relative overflow-hidden"
             >
               <div className="relative z-10">
-                <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl border border-pink-50 group-hover:scale-110 transition-all duration-500">
-                  <Camera className="w-10 h-10 text-purple-400 group-hover:text-purple-600 transition-colors" />
+                <div className="w-24 h-24 bg-white rounded-[32px] flex items-center justify-center mx-auto mb-8 shadow-2xl border border-ceres-mint group-hover:scale-110 transition-all duration-500">
+                  <Camera className="w-10 h-10 text-ceres-primary" />
                 </div>
-                <p className="text-xl font-bold text-slate-700">Haz clic para subir o tomar foto</p>
-                <p className="text-sm text-slate-400 mt-2 font-medium">Soporta JPG, PNG de tus resultados de laboratorio.</p>
+                <p className="text-2xl font-serif font-bold text-slate-800 tracking-tight">Sube tu resultado médico</p>
+                <p className="text-sm text-slate-400 mt-3 font-medium">Captura o adjunta tu examen de laboratorio (PNG, JPG)</p>
               </div>
-              {/* Decorative circles in upload box */}
-              <div className="absolute -top-10 -right-10 w-40 h-40 bg-pink-100/30 rounded-full blur-2xl"></div>
-              <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-purple-100/30 rounded-full blur-2xl"></div>
               <input 
                 type="file" 
                 ref={fileInputRef} 
@@ -76,37 +73,33 @@ const MedicalAnalysis: React.FC = () => {
               />
             </div>
           ) : (
-            <div className="space-y-8">
-              <div className="relative group rounded-3xl overflow-hidden bg-slate-50 border border-slate-100 shadow-inner">
-                <img src={image} alt="Examen" className="max-h-[500px] w-full object-contain p-4" />
+            <div className="space-y-10">
+              <div className="relative group rounded-[40px] overflow-hidden bg-slate-50 border border-slate-100 shadow-inner">
+                <img src={image} alt="Examen" className="max-h-[600px] w-full object-contain p-6" />
                 <button 
                   onClick={() => setImage(null)}
-                  className="absolute top-6 right-6 bg-slate-900/80 backdrop-blur-md text-white p-3 rounded-2xl hover:bg-slate-900 transition-all shadow-lg"
+                  className="absolute top-8 right-8 bg-ceres-dark/80 backdrop-blur-md text-white p-4 rounded-3xl hover:bg-ceres-dark transition-all shadow-xl"
                 >
-                  <FileText className="w-5 h-5" />
+                  <FileText className="w-6 h-6" />
                 </button>
               </div>
 
-              <div className="space-y-4">
-                <label className="flex items-center gap-2 text-sm font-bold text-slate-600 ml-1">
-                  <Sparkles className="w-4 h-4 text-fuchsia-500" />
-                  ¿Alguna pregunta específica sobre este examen?
-                </label>
-                <div className="flex flex-col sm:flex-row gap-3">
+              <div className="space-y-6">
+                <div className="flex flex-col sm:flex-row gap-4">
                   <input 
                     type="text"
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
-                    placeholder="Ej: ¿Mi nivel de hierro está dentro de lo normal?"
-                    className="flex-1 px-6 py-5 rounded-2xl bg-slate-50 border border-slate-100 focus:ring-2 focus:ring-purple-500 focus:bg-white outline-none transition-all shadow-sm"
+                    placeholder="¿Alguna duda específica? (Ej: ¿Mi hierro está bien?)"
+                    className="flex-1 px-8 py-6 rounded-3xl bg-slate-50 border border-slate-100 focus:ring-4 focus:ring-ceres-mint focus:bg-white outline-none transition-all font-medium text-lg"
                   />
                   <button 
                     onClick={handleAnalyze}
                     disabled={loading}
-                    className="bg-purple-600 hover:bg-purple-700 disabled:bg-slate-200 text-white px-10 py-5 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all shadow-xl shadow-purple-200"
+                    className="bg-ceres-primary hover:bg-ceres-dark disabled:bg-slate-200 text-white px-12 py-6 rounded-3xl font-bold flex items-center justify-center gap-3 transition-all shadow-2xl shadow-ceres-primary/20 uppercase tracking-widest text-xs"
                   >
                     {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Send className="w-6 h-6" />}
-                    Analizar Resultados
+                    Analizar Ahora
                   </button>
                 </div>
               </div>
@@ -114,29 +107,27 @@ const MedicalAnalysis: React.FC = () => {
           )}
 
           {analysis && (
-            <div className="mt-12 p-10 bg-purple-50/50 rounded-[40px] border border-purple-100 space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-700 relative overflow-hidden">
+            <div className="mt-16 p-12 bg-ceres-light rounded-[50px] border border-ceres-mint space-y-8 animate-in fade-in slide-in-from-bottom-10 duration-700 relative overflow-hidden">
               <div className="relative z-10">
-                <div className="flex items-center gap-4 mb-8">
-                  <div className="w-12 h-12 bg-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-200">
-                    <Sparkles className="text-white w-6 h-6 fill-white" />
+                <div className="flex items-center gap-5 mb-10 pb-6 border-b border-ceres-mint">
+                  <div className="w-14 h-14 bg-ceres-primary rounded-2xl flex items-center justify-center shadow-lg shadow-ceres-primary/30">
+                    <ShieldCheck className="text-white w-7 h-7" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-2xl text-purple-900 font-serif">Análisis Ser Mujer IA</h3>
-                    <p className="text-[10px] text-purple-400 font-bold uppercase tracking-[0.2em]">Basado en tus datos gestacionales</p>
+                    <h3 className="font-serif font-bold text-2xl text-ceres-dark">Diagnóstico Ser Mujer IA</h3>
+                    <p className="text-[10px] text-ceres-primary font-bold uppercase tracking-[0.2em]">Basado en tus datos gestacionales</p>
                   </div>
                 </div>
-                <div className="prose prose-slate prose-lg max-w-none text-slate-700 whitespace-pre-wrap leading-relaxed font-medium">
+                <div className="prose prose-slate prose-lg max-w-none text-slate-700 whitespace-pre-wrap leading-relaxed font-medium italic">
                   {analysis}
                 </div>
-                <div className="mt-10 pt-8 border-t border-purple-100 flex items-start gap-4 text-sm text-purple-700 bg-white/50 p-6 rounded-3xl">
-                  <AlertCircle className="w-6 h-6 text-fuchsia-500 shrink-0 mt-1" />
-                  <p className="leading-relaxed">
-                    <strong>Recordatorio Médico:</strong> Este análisis automático es para orientación informativa. Debes presentar estos resultados a tu médico obstetra en tu próximo control prenatal para un diagnóstico definitivo.
+                <div className="mt-12 pt-10 border-t border-ceres-mint flex items-start gap-5 text-sm text-ceres-dark bg-white/60 p-8 rounded-[32px]">
+                  <AlertCircle className="w-6 h-6 text-ceres-primary shrink-0 mt-1" />
+                  <p className="leading-relaxed font-bold opacity-80 uppercase tracking-wide text-[11px]">
+                    <strong>IMPORTANTE:</strong> Este informe es puramente orientativo y no sustituye la valoración médica presencial. Presenta estos resultados a tu especialista Ceres en tu próxima cita.
                   </p>
                 </div>
               </div>
-              {/* Decorative background for analysis */}
-              <div className="absolute top-0 right-0 w-64 h-64 bg-purple-200/20 rounded-full -mr-32 -mt-32 blur-3xl"></div>
             </div>
           )}
         </div>

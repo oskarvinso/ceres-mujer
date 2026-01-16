@@ -11,7 +11,9 @@ import {
   ClipboardList,
   Menu,
   X,
-  UserCircle
+  ShieldCheck,
+  Stethoscope,
+  Fingerprint
 } from 'lucide-react';
 
 import Dashboard from './pages/Dashboard';
@@ -22,6 +24,19 @@ import Wellness from './pages/Wellness';
 import Education from './pages/Education';
 import Auth from './pages/Auth';
 import ProfileSetup from './pages/ProfileSetup';
+import VirtualCard from './pages/VirtualCard';
+
+const Logo = () => (
+  <div className="flex items-center gap-3">
+    <div className="w-10 h-10 bg-ceres-primary rounded-xl flex items-center justify-center shadow-lg shadow-ceres-primary/20">
+      <ShieldCheck className="text-white w-6 h-6" />
+    </div>
+    <div className="flex flex-col">
+      <span className="font-serif text-xl font-bold text-ceres-dark leading-none tracking-tight">CERES</span>
+      <span className="text-[9px] uppercase tracking-[0.3em] text-ceres-primary font-bold">Ser Mujer</span>
+    </div>
+  </div>
+);
 
 const Navbar = ({ onLogout }: { onLogout: () => void }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -29,56 +44,51 @@ const Navbar = ({ onLogout }: { onLogout: () => void }) => {
 
   const navItems = [
     { path: '/', icon: LayoutDashboard, label: 'Inicio' },
-    { path: '/salud', icon: Activity, label: 'Salud' },
-    { path: '/examenes', icon: ClipboardList, label: 'Exámenes' },
-    { path: '/bienestar', icon: PlayCircle, label: 'Clases' },
-    { path: '/tienda', icon: ShoppingBag, label: 'Tienda' },
-    { path: '/educacion', icon: BookOpen, label: 'Crianza' },
+    { path: '/salud', icon: Activity, label: 'Mi Salud' },
+    { path: '/carnet', icon: Fingerprint, label: 'Carnet' },
+    { path: '/examenes', icon: ClipboardList, label: 'Análisis IA' },
+    { path: '/bienestar', icon: PlayCircle, label: 'Estudio' },
+    { path: '/tienda', icon: ShoppingBag, label: 'Boutique' },
+    { path: '/educacion', icon: BookOpen, label: 'Academia' },
   ];
 
   return (
-    <nav className="bg-white border-b border-pink-100 sticky top-0 z-50 shadow-sm">
+    <nav className="bg-white/80 backdrop-blur-md border-b border-ceres-mint sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
+        <div className="flex justify-between h-20">
           <div className="flex items-center">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="w-9 h-9 bg-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-200">
-                <Heart className="text-white w-5 h-5 fill-white" />
-              </div>
-              <div className="flex flex-col leading-tight">
-                <span className="font-serif text-lg font-bold text-purple-800">Ser Mujer</span>
-                <span className="text-[10px] uppercase tracking-widest text-fuchsia-500 font-bold">Salud y Vida</span>
-              </div>
+            <Link to="/">
+              <Logo />
             </Link>
           </div>
           
-          <div className="hidden md:flex items-center space-x-2">
+          <div className="hidden lg:flex items-center space-x-2">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all ${
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
                   location.pathname === item.path
-                    ? 'bg-purple-600 text-white shadow-md shadow-purple-200'
-                    : 'text-slate-600 hover:text-purple-600 hover:bg-purple-50'
+                    ? 'bg-ceres-primary text-white shadow-lg shadow-ceres-primary/20'
+                    : 'text-slate-500 hover:text-ceres-primary hover:bg-ceres-mint'
                 }`}
               >
-                <item.icon className={`w-4 h-4 ${location.pathname === item.path ? 'text-white' : ''}`} />
+                <item.icon className="w-4 h-4" />
                 {item.label}
               </Link>
             ))}
             <button 
               onClick={onLogout}
-              className="ml-4 p-2 text-slate-400 hover:text-rose-500 transition-colors"
-              title="Salir"
+              className="ml-4 p-2.5 text-slate-300 hover:text-rose-500 transition-colors"
+              title="Cerrar sesión"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
-          <div className="md:hidden flex items-center">
-            <button onClick={() => setIsOpen(!isOpen)} className="text-purple-600 p-2">
-              {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          <div className="lg:hidden flex items-center">
+            <button onClick={() => setIsOpen(!isOpen)} className="text-ceres-dark p-2">
+              {isOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
             </button>
           </div>
         </div>
@@ -86,25 +96,31 @@ const Navbar = ({ onLogout }: { onLogout: () => void }) => {
 
       {/* Mobile menu */}
       {isOpen && (
-        <div className="md:hidden bg-white border-t border-pink-50 py-2 shadow-xl">
-          {navItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              onClick={() => setIsOpen(false)}
-              className="flex items-center gap-3 px-6 py-4 text-slate-600 hover:bg-purple-50 hover:text-purple-600 border-l-4 border-transparent hover:border-purple-600 transition-all"
+        <div className="lg:hidden bg-white border-t border-ceres-mint py-6 shadow-2xl animate-in slide-in-from-top-4">
+          <div className="flex flex-col gap-1 px-4">
+            {navItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                onClick={() => setIsOpen(false)}
+                className={`flex items-center gap-4 px-6 py-4 rounded-2xl text-sm font-bold tracking-wide transition-all ${
+                  location.pathname === item.path
+                    ? 'bg-ceres-primary text-white'
+                    : 'text-slate-600 hover:bg-ceres-mint'
+                }`}
+              >
+                <item.icon className="w-5 h-5" />
+                {item.label}
+              </Link>
+            ))}
+            <button 
+              onClick={onLogout}
+              className="flex items-center gap-4 px-6 py-4 mt-2 text-rose-500 font-bold"
             >
-              <item.icon className="w-5 h-5" />
-              <span className="font-semibold">{item.label}</span>
-            </Link>
-          ))}
-          <button 
-            onClick={onLogout}
-            className="w-full flex items-center gap-3 px-6 py-4 text-rose-500 hover:bg-rose-50 border-l-4 border-transparent"
-          >
-            <X className="w-5 h-5" />
-            <span className="font-semibold">Cerrar Sesión</span>
-          </button>
+              <X className="w-5 h-5" />
+              Cerrar Sesión
+            </button>
+          </div>
         </div>
       )}
     </nav>
@@ -112,20 +128,20 @@ const Navbar = ({ onLogout }: { onLogout: () => void }) => {
 };
 
 const App: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => localStorage.getItem('ser_mujer_auth') === 'true');
-  const [hasProfile, setHasProfile] = useState<boolean>(() => !!localStorage.getItem('ser_mujer_profile'));
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => localStorage.getItem('ceres_auth') === 'true');
+  const [hasProfile, setHasProfile] = useState<boolean>(() => !!localStorage.getItem('ceres_profile'));
 
   const handleLogin = () => {
     setIsAuthenticated(true);
-    localStorage.setItem('ser_mujer_auth', 'true');
+    localStorage.setItem('ceres_auth', 'true');
   };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
     setHasProfile(false);
-    localStorage.removeItem('ser_mujer_auth');
-    localStorage.removeItem('ser_mujer_profile');
-    localStorage.removeItem('ser_mujer_risk');
+    localStorage.removeItem('ceres_auth');
+    localStorage.removeItem('ceres_profile');
+    localStorage.removeItem('ceres_risk');
   };
 
   const handleProfileComplete = () => {
@@ -142,12 +158,13 @@ const App: React.FC = () => {
 
   return (
     <HashRouter>
-      <div className="min-h-screen flex flex-col bg-pink-50/30">
+      <div className="min-h-screen flex flex-col bg-ceres-light selection:bg-ceres-secondary selection:text-ceres-dark">
         <Navbar onLogout={handleLogout} />
         <main className="flex-grow">
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/salud" element={<HealthTracker />} />
+            <Route path="/carnet" element={<VirtualCard />} />
             <Route path="/examenes" element={<MedicalAnalysis />} />
             <Route path="/tienda" element={<Shop />} />
             <Route path="/bienestar" element={<Wellness />} />
@@ -155,17 +172,24 @@ const App: React.FC = () => {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
-        <footer className="bg-purple-900 text-purple-200 py-12 px-4 text-center">
-          <div className="max-w-7xl mx-auto space-y-4">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-                <Heart className="text-purple-900 w-5 h-5 fill-purple-900" />
-              </div>
-              <span className="font-serif text-xl font-bold text-white">Ser Mujer</span>
+        <footer className="bg-white border-t border-ceres-mint py-16 px-4">
+          <div className="max-w-7xl mx-auto flex flex-col items-center text-center space-y-8">
+            <Logo />
+            <p className="text-slate-400 text-sm max-w-lg leading-relaxed font-medium">
+              Especialistas en ecografía a domicilio y salud integral para la mujer. <br/>
+              Acompañándote en el viaje más importante de tu vida.
+            </p>
+            <div className="flex gap-8 text-[10px] font-bold uppercase tracking-[0.2em] text-ceres-primary">
+              <a href="#" className="hover:text-ceres-dark transition-colors">Servicios</a>
+              <a href="#" className="hover:text-ceres-dark transition-colors">Nosotros</a>
+              <a href="#" className="hover:text-ceres-dark transition-colors">Soporte</a>
             </div>
-            <p className="text-sm opacity-80">Salud y Vida para la madre gestante.</p>
-            <div className="pt-8 border-t border-purple-800 text-xs opacity-60">
-              © 2024 Ser Mujer. Inspirado en Ceres Ecografía en Casa.
+            <div className="pt-8 border-t border-ceres-mint w-full flex flex-col md:flex-row justify-between items-center gap-4 text-[9px] text-slate-300 font-bold tracking-widest uppercase">
+              <span>© 2024 Ceres Ecografía en Casa - Ser Mujer</span>
+              <div className="flex gap-6">
+                <span>Protección de Datos</span>
+                <span>Terminos & Condiciones</span>
+              </div>
             </div>
           </div>
         </footer>
