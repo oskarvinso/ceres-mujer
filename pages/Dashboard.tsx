@@ -5,22 +5,17 @@ import {
   Heart, 
   ChevronRight, 
   Calendar, 
-  Bell, 
   Thermometer, 
   Scale, 
-  Droplets,
   Activity,
-  AlertTriangle,
-  Sparkles,
   ShieldCheck,
   Stethoscope,
-  Baby,
   MapPin,
   User,
   Target,
-  Fingerprint
+  Fingerprint,
+  Info
 } from 'lucide-react';
-import { getHealthTips } from '../services/geminiService';
 import { UserProfile } from '../types';
 
 const StatCard = ({ icon: Icon, label, value, unit, colorClass }: any) => (
@@ -39,8 +34,6 @@ const StatCard = ({ icon: Icon, label, value, unit, colorClass }: any) => (
 );
 
 const Dashboard: React.FC = () => {
-  const [tips, setTips] = useState<string>("");
-  const [loadingTips, setLoadingTips] = useState(true);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [gestationalWeeks, setGestationalWeeks] = useState<number>(0);
   const [riskLevel, setRiskLevel] = useState<string>('Bajo');
@@ -54,19 +47,6 @@ const Dashboard: React.FC = () => {
       setRiskLevel(savedRisk || 'Bajo');
       setGestationalWeeks(data.gestationWeeks || 0);
     }
-
-    const fetchTips = async () => {
-      try {
-        const healthData = { weight: 68.5, heartRate: 78, bp: "110/70", risk: savedRisk };
-        const result = await getHealthTips(healthData);
-        setTips(result || "Mantente hidratada y realiza tus controles periódicos.");
-      } catch (err) {
-        setTips("Tu salud es nuestra prioridad. No olvides tus vitaminas prenatales.");
-      } finally {
-        setLoadingTips(false);
-      }
-    };
-    fetchTips();
   }, []);
 
   const getBabySizeInfo = (weeks: number) => {
@@ -131,36 +111,29 @@ const Dashboard: React.FC = () => {
       </section>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        <StatCard icon={Thermometer} label="Tensión Arterial" value="110/70" unit="mmHg" colorClass="bg-teal-500" />
+        <StatCard icon={Thermometer} label="Tensión Arterial" value="110/70" unit="mmHg" colorClass="bg-ceres-secondary" />
         <StatCard icon={Activity} label="Pulso" value="76" unit="bpm" colorClass="bg-ceres-primary" />
         <StatCard icon={Scale} label="Peso Actual" value="68.2" unit="kg" colorClass="bg-slate-700" />
-        <StatCard icon={Target} label="Meta Ceres" value={profile?.weightGoal.max || 16} unit="kg" colorClass="bg-blue-500" />
+        <StatCard icon={Target} label="Meta Ceres" value={profile?.weightGoal.max || 16} unit="kg" colorClass="bg-ceres-dark" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
         <div className="lg:col-span-2 space-y-10">
-          {/* IA Insights */}
+          {/* Information Section (Replaces AI) */}
           <section className="bg-ceres-dark rounded-[40px] p-12 text-white relative overflow-hidden shadow-2xl">
             <div className="relative z-10 space-y-8">
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-white/10 rounded-2xl backdrop-blur-md">
-                  <Sparkles className="w-6 h-6 text-ceres-secondary" />
+                  <Heart className="w-6 h-6 text-ceres-secondary" />
                 </div>
                 <div>
-                  <h2 className="text-xs font-bold uppercase tracking-[0.3em] text-ceres-secondary">Ceres IA Salud</h2>
-                  <p className="text-lg font-bold">Resumen de Bienestar</p>
+                  <h2 className="text-xs font-bold uppercase tracking-[0.3em] text-ceres-secondary">Bienestar Ceres</h2>
+                  <p className="text-lg font-bold">Consejo de Salud Diaria</p>
                 </div>
               </div>
-              {loadingTips ? (
-                <div className="space-y-4">
-                  <div className="h-4 bg-white/10 rounded-full animate-pulse w-3/4"></div>
-                  <div className="h-4 bg-white/10 rounded-full animate-pulse w-1/2"></div>
-                </div>
-              ) : (
-                <p className="text-xl md:text-2xl font-serif italic leading-relaxed opacity-95">
-                  "{tips}"
-                </p>
-              )}
+              <p className="text-xl md:text-2xl font-serif italic leading-relaxed opacity-95">
+                "Mantenerse hidratada y realizar caminatas suaves de 20 minutos ayuda a mejorar la circulación y reduce la fatiga durante este trimestre."
+              </p>
               <div className="pt-8 border-t border-white/10 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full border-2 border-white/20 overflow-hidden">
@@ -197,7 +170,7 @@ const Dashboard: React.FC = () => {
                 </button>
               </div>
             </div>
-            {/* Quick Link to Virtual Card */}
+            
             <Link to="/carnet" className="bg-white p-10 rounded-[40px] border border-ceres-mint shadow-sm space-y-8 group hover:border-ceres-primary transition-all">
               <h3 className="text-xl font-serif font-bold text-slate-800 flex items-center gap-3">
                 <Fingerprint className="w-6 h-6 text-ceres-primary" />
@@ -230,6 +203,13 @@ const Dashboard: React.FC = () => {
                 PEDIR ECOGRAFÍA
               </button>
             </div>
+          </div>
+          
+          <div className="bg-ceres-mint p-8 rounded-[40px] border border-ceres-primary/20 flex items-start gap-4">
+             <Info className="w-6 h-6 text-ceres-primary shrink-0 mt-1" />
+             <p className="text-[11px] font-bold text-ceres-dark leading-relaxed uppercase tracking-wide">
+               Recuerda presentar tu carnet virtual en cada una de tus visitas médicas Ceres.
+             </p>
           </div>
         </aside>
       </div>

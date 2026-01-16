@@ -8,16 +8,13 @@ import {
   BookOpen, 
   PlayCircle, 
   LayoutDashboard, 
-  ClipboardList,
   Menu,
   X,
-  ShieldCheck,
   Fingerprint
 } from 'lucide-react';
 
 import Dashboard from './pages/Dashboard.tsx';
 import HealthTracker from './pages/HealthTracker.tsx';
-import MedicalAnalysis from './pages/MedicalAnalysis.tsx';
 import Shop from './pages/Shop.tsx';
 import Wellness from './pages/Wellness.tsx';
 import Education from './pages/Education.tsx';
@@ -27,12 +24,22 @@ import VirtualCard from './pages/VirtualCard.tsx';
 
 const Logo = () => (
   <div className="flex items-center gap-3">
-    <div className="w-10 h-10 bg-ceres-primary rounded-xl flex items-center justify-center shadow-lg shadow-ceres-primary/20">
-      <ShieldCheck className="text-white w-6 h-6" />
+    <div className="w-12 h-12 flex items-center justify-center overflow-hidden">
+      <img 
+        src="https://raw.githubusercontent.com/StackBlitz/stackblitz-images/main/ceres-logo-placeholder.png" 
+        alt="Ceres Logo" 
+        className="w-full h-full object-contain"
+        onError={(e) => {
+          // Fallback if image not found: use a styled mother-child icon
+          const target = e.target as HTMLImageElement;
+          target.style.display = 'none';
+          target.parentElement!.innerHTML = `<div class="w-10 h-10 bg-gradient-to-br from-ceres-primary to-ceres-secondary rounded-full flex items-center justify-center shadow-lg"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></div>`;
+        }}
+      />
     </div>
     <div className="flex flex-col">
       <span className="font-serif text-xl font-bold text-ceres-dark leading-none tracking-tight">CERES</span>
-      <span className="text-[9px] uppercase tracking-[0.3em] text-ceres-primary font-bold">Ser Mujer</span>
+      <span className="text-[9px] uppercase tracking-[0.3em] text-ceres-secondary font-bold">Ser Mujer</span>
     </div>
   </div>
 );
@@ -45,7 +52,6 @@ const Navbar = ({ onLogout }: { onLogout: () => void }) => {
     { path: '/', icon: LayoutDashboard, label: 'Inicio' },
     { path: '/salud', icon: Activity, label: 'Mi Salud' },
     { path: '/carnet', icon: Fingerprint, label: 'Carnet' },
-    { path: '/examenes', icon: ClipboardList, label: 'Análisis IA' },
     { path: '/bienestar', icon: PlayCircle, label: 'Estudio' },
     { path: '/tienda', icon: ShoppingBag, label: 'Boutique' },
     { path: '/educacion', icon: BookOpen, label: 'Academia' },
@@ -163,7 +169,6 @@ const App: React.FC = () => {
             <Route path="/" element={<Dashboard />} />
             <Route path="/salud" element={<HealthTracker />} />
             <Route path="/carnet" element={<VirtualCard />} />
-            <Route path="/examenes" element={<MedicalAnalysis />} />
             <Route path="/tienda" element={<Shop />} />
             <Route path="/bienestar" element={<Wellness />} />
             <Route path="/educacion" element={<Education />} />
