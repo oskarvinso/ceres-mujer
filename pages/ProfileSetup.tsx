@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { User, Phone, MapPin, Calendar, ArrowRight, ShieldCheck, Mail, Scale, ClipboardList, Navigation, Activity, Info, Baby, Check, AlertCircle } from 'lucide-react';
+import { User, Phone, MapPin, Calendar, ArrowRight, ShieldCheck, Mail, Scale, ClipboardList, Navigation, Activity, Info, Baby, Check, AlertCircle, UserPlus, UserCheck, RefreshCcw } from 'lucide-react';
 import { UserProfile, RiskFactors } from '../types';
 
 interface ProfileSetupProps {
@@ -21,9 +21,11 @@ const COLOMBIA_DATA: Record<string, string[]> = {
 };
 
 const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0); // 0: Entry Mode Selection, 1-4: Standard Steps
   const [geocoding, setGeocoding] = useState(false);
   const [isClassified, setIsClassified] = useState(false);
+  const [isNewPatient, setIsNewPatient] = useState(true);
+
   const [formData, setFormData] = useState<UserProfile>({
     name: '',
     lastName: '',
@@ -53,6 +55,17 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
       currentPregnancy: { noObstetricRiskFactors: false, multiplePregnancy: false, threatenedAbortion: false, threatenedPreterm: false, rciu: false, poly_oligohydramnios: false, hemorrhage: false, perinatalInfection: false }
     }
   });
+
+  const handleEntryMode = (isNew: boolean) => {
+    setIsNewPatient(isNew);
+    if (!isNew) {
+      const savedProfile = localStorage.getItem('ceres_profile');
+      if (savedProfile) {
+        setFormData(JSON.parse(savedProfile));
+      }
+    }
+    setStep(1);
+  };
 
   const imcData = useMemo(() => {
     const heightM = formData.height / 100;
@@ -181,22 +194,18 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
       const newValue = !newCategoryState[field];
       newCategoryState[field] = newValue;
 
-      // Reset classification if factors change
       if (step === 4) setIsClassified(false);
 
-      // Medical "No Risk" Mutual Exclusivity
       if (cat === 'medical' && field === 'noRiskFactors' && newValue) {
         Object.keys(newCategoryState).forEach(key => { if (key !== 'noRiskFactors') newCategoryState[key] = false; });
         const newReproductiveState = { ...prev.riskFactors.reproductive };
         Object.keys(newReproductiveState).forEach(key => { (newReproductiveState as any)[key] = false; });
         return { ...prev, riskFactors: { ...prev.riskFactors, medical: newCategoryState, reproductive: newReproductiveState } };
       } 
-      // Obstetric "No Risk" Mutual Exclusivity
       else if (cat === 'currentPregnancy' && field === 'noObstetricRiskFactors' && newValue) {
         Object.keys(newCategoryState).forEach(key => { if (key !== 'noObstetricRiskFactors') newCategoryState[key] = false; });
         return { ...prev, riskFactors: { ...prev.riskFactors, currentPregnancy: newCategoryState } };
       }
-      // If selecting any risk, deselect the corresponding "no factors"
       else if (newValue && field !== 'noRiskFactors' && field !== 'noObstetricRiskFactors') {
         const resetMedical = cat === 'medical' || cat === 'reproductive' ? { ...prev.riskFactors.medical, noRiskFactors: false } : prev.riskFactors.medical;
         const resetObstetric = cat === 'currentPregnancy' ? { ...prev.riskFactors.currentPregnancy, noObstetricRiskFactors: false } : prev.riskFactors.currentPregnancy;
@@ -223,7 +232,6 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
   };
 
   const isStep1Invalid = !formData.name || !formData.lastName || !formData.idNumber || !formData.phone || !formData.email || !formData.address || !formData.department || !formData.municipality;
-
   const isStep4Valid = formData.riskFactors.currentPregnancy.noObstetricRiskFactors || 
                        Object.entries(formData.riskFactors.currentPregnancy).some(([k, v]) => k !== 'noObstetricRiskFactors' && v === true);
 
@@ -259,14 +267,63 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
         </div>
 
         <div className="md:w-2/3 p-8 md:p-14 overflow-y-auto">
+          {step === 0 && (
+            <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700 h-full flex flex-col justify-center">
+              <div className="text-center space-y-4">
+                <h3 className="text-4xl font-serif font-bold text-slate-800">Bienvenida a Ceres</h3>
+                <p className="text-slate-500 font-medium">Por favor indica tu situación actual para iniciar el protocolo.</p>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <button 
+                  onClick={() => handleEntryMode(true)}
+                  className="group p-10 bg-white border-2 border-slate-100 rounded-[40px] hover:border-ceres-primary hover:bg-ceres-mint transition-all text-center space-y-6 shadow-sm hover:shadow-xl"
+                >
+                  <div className="w-20 h-20 bg-ceres-primary/10 rounded-3xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform">
+                    <UserPlus className="w-10 h-10 text-ceres-primary" />
+                  </div>
+                  <div className="space-y-2">
+                    <h4 className="text-xl font-bold text-slate-800">Paciente Nueva</h4>
+                    <p className="text-xs text-slate-500 font-medium px-4">Inicia tu expediente digital desde cero con acompañamiento IA.</p>
+                  </div>
+                </button>
+
+                <button 
+                  onClick={() => handleEntryMode(false)}
+                  className="group p-10 bg-white border-2 border-slate-100 rounded-[40px] hover:border-ceres-primary hover:bg-ceres-mint transition-all text-center space-y-6 shadow-sm hover:shadow-xl"
+                >
+                  <div className="w-20 h-20 bg-ceres-secondary/20 rounded-3xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform">
+                    <UserCheck className="w-10 h-10 text-ceres-primary" />
+                  </div>
+                  <div className="space-y-2">
+                    <h4 className="text-xl font-bold text-slate-800">Paciente Registrada</h4>
+                    <p className="text-xs text-slate-500 font-medium px-4">Conserva tus datos previos y actualiza tu estado gestacional.</p>
+                  </div>
+                </button>
+              </div>
+
+              <div className="pt-10 flex items-center justify-center gap-4 text-slate-400">
+                <ShieldCheck className="w-5 h-5" />
+                <span className="text-[10px] font-bold uppercase tracking-widest">Seguridad de Datos Grado Médico</span>
+              </div>
+            </div>
+          )}
+
           {step === 1 && (
             <div className="space-y-8 animate-in fade-in slide-in-from-right-10">
               <div className="flex justify-between items-center">
-                <h3 className="text-3xl font-serif font-bold text-slate-800">Perfil del Paciente</h3>
+                <div className="flex flex-col">
+                  <h3 className="text-3xl font-serif font-bold text-slate-800">Perfil del Paciente</h3>
+                  {!isNewPatient && (
+                    <span className="text-[10px] font-bold text-ceres-primary uppercase tracking-widest mt-1 flex items-center gap-2">
+                      <RefreshCcw className="w-3 h-3" /> Datos Cargados del Expediente
+                    </span>
+                  )}
+                </div>
                 {isStep1Invalid && (
                   <div className="flex items-center gap-2 px-3 py-1 bg-rose-50 rounded-full text-[10px] font-bold text-rose-500 uppercase">
                     <Info className="w-3 h-3" />
-                    Campos Pendientes
+                    Pendientes
                   </div>
                 )}
               </div>
@@ -475,17 +532,27 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
             </div>
           )}
 
-          <div className="mt-16 flex items-center justify-between">
-            <button onClick={() => step > 1 && setStep(step - 1)} className={`text-slate-300 font-bold uppercase tracking-widest text-[10px] ${step === 1 ? 'opacity-0 pointer-events-none' : 'hover:text-ceres-primary transition-colors'}`}>Regresar</button>
-            <button 
-              onClick={handleNext} 
-              disabled={(step === 1 && isStep1Invalid) || (step === 4 && !isStep4Valid && !isClassified)} 
-              className="bg-ceres-primary hover:bg-ceres-dark disabled:bg-slate-100 disabled:text-slate-300 text-white px-12 py-5 rounded-[24px] font-bold tracking-[0.2em] text-[10px] flex items-center gap-4 transition-all shadow-2xl shadow-ceres-primary/20 group"
-            >
-              {step === 4 ? (isClassified ? 'FINALIZAR PROTOCOLO' : 'VER CLASIFICACIÓN') : 'SIGUIENTE PASO'}
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1" />
-            </button>
-          </div>
+          {step > 0 && (
+            <div className="mt-16 flex items-center justify-between">
+              <button 
+                onClick={() => {
+                  if (step === 1) setStep(0);
+                  else setStep(step - 1);
+                }} 
+                className="text-slate-300 font-bold uppercase tracking-widest text-[10px] hover:text-ceres-primary transition-colors"
+              >
+                Regresar
+              </button>
+              <button 
+                onClick={handleNext} 
+                disabled={(step === 1 && isStep1Invalid) || (step === 4 && !isStep4Valid && !isClassified)} 
+                className="bg-ceres-primary hover:bg-ceres-dark disabled:bg-slate-100 disabled:text-slate-300 text-white px-12 py-5 rounded-[24px] font-bold tracking-[0.2em] text-[10px] flex items-center gap-4 transition-all shadow-2xl shadow-ceres-primary/20 group"
+              >
+                {step === 4 ? (isClassified ? 'FINALIZAR PROTOCOLO' : 'VER CLASIFICACIÓN') : 'SIGUIENTE PASO'}
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1" />
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

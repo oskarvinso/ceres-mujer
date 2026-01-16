@@ -15,7 +15,7 @@ import {
   ClipboardList,
   Edit3
 } from 'lucide-react';
-import { UserProfile, ExamCategory, PrenatalExam, PrenatalControlTrack } from '../types';
+import { UserProfile, ExamCategory, PrenatalExam, PrenatalControlTrack } from '../types.ts';
 
 const INITIAL_EXAM_SCHEDULE: ExamCategory[] = [
   {
@@ -142,7 +142,7 @@ const VirtualCard: React.FC = () => {
             if (ex.id === examId) {
               const currentStatus = ex.status;
               const newStatus = currentStatus === status ? 'pending' : status;
-              return { ...ex, status: newStatus as any };
+              return { ...ex, status: newStatus as 'pending' | 'normal' | 'abnormal' };
             }
             return ex;
           })
@@ -205,7 +205,11 @@ const VirtualCard: React.FC = () => {
     cat.exams.filter(ex => ex.status === 'abnormal').map(ex => ({ ...ex, catId: cat.id }))
   );
 
-  if (!profile) return null;
+  if (!profile) return (
+    <div className="flex items-center justify-center h-screen text-slate-400 font-bold uppercase tracking-widest text-xs">
+      Cargando Carnet Ceres...
+    </div>
+  );
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-12 space-y-12 animate-in fade-in duration-700 pb-24">
@@ -218,7 +222,6 @@ const VirtualCard: React.FC = () => {
         <p className="text-slate-500 font-medium">Control unificado de salud, nutrición y laboratorios.</p>
       </header>
 
-      {/* Main Identity Info */}
       <div className="bg-white rounded-[40px] border border-ceres-mint shadow-2xl overflow-hidden relative">
         <div className="bg-ceres-dark p-10 text-white flex flex-col md:flex-row justify-between items-center gap-8 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-ceres-primary rounded-full -mr-32 -mt-32 opacity-20 blur-3xl"></div>
@@ -246,7 +249,6 @@ const VirtualCard: React.FC = () => {
           </div>
         </div>
 
-        {/* 10 Prenatal Controls Section */}
         <div className="p-8 md:p-12 border-b border-ceres-mint bg-ceres-light/30">
           <div className="flex items-center gap-4 mb-8">
             <ClipboardList className="w-8 h-8 text-ceres-primary" />
@@ -291,7 +293,6 @@ const VirtualCard: React.FC = () => {
           </div>
         </div>
 
-        {/* Labs Checklist Section */}
         <div className="p-8 md:p-12 space-y-10">
           <div className="flex items-center justify-between">
             <h3 className="text-2xl font-serif font-bold text-slate-800 flex items-center gap-3">
@@ -326,7 +327,6 @@ const VirtualCard: React.FC = () => {
                           <span className="text-sm font-bold text-slate-700">{exam.name}</span>
                           
                           <div className="flex items-center gap-4">
-                            {/* Normal / Abnormal Toggle buttons */}
                             <div className="flex bg-white rounded-2xl p-1 shadow-sm border border-slate-100">
                               <button 
                                 onClick={() => handleStatusToggle(category.id, exam.id, 'normal')}
@@ -344,7 +344,6 @@ const VirtualCard: React.FC = () => {
                           </div>
                         </div>
 
-                        {/* Special Result Handling for Blood Type */}
                         {exam.id === 'e1' && (
                           <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
                             {BLOOD_TYPES.map(bt => (
@@ -359,7 +358,6 @@ const VirtualCard: React.FC = () => {
                           </div>
                         )}
 
-                        {/* Additional value input for abnormal or specific exams */}
                         {(exam.status === 'abnormal' || exam.resultValue) && exam.id !== 'e1' && (
                           <div className="relative animate-in slide-in-from-top-2">
                             <Edit3 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-ceres-primary" />
@@ -381,7 +379,6 @@ const VirtualCard: React.FC = () => {
           </div>
         </div>
 
-        {/* Abnormal Follow-up Summary Section */}
         {abnormalExams.length > 0 && (
           <div className="p-8 md:p-12 bg-rose-50/50 border-t border-rose-100">
             <div className="flex items-center gap-4 mb-8">
@@ -411,7 +408,6 @@ const VirtualCard: React.FC = () => {
           </div>
         )}
 
-        {/* Action Footer */}
         <div className="p-10 bg-slate-50 border-t border-ceres-mint text-center space-y-6">
           <p className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em] max-w-md mx-auto leading-relaxed">
             Toda información registrada aquí es procesada para tu seguimiento gestacional en Ceres.

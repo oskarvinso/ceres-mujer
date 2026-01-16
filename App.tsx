@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { HashRouter, Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
 import { 
   Heart, 
@@ -12,19 +12,18 @@ import {
   Menu,
   X,
   ShieldCheck,
-  Stethoscope,
   Fingerprint
 } from 'lucide-react';
 
-import Dashboard from './pages/Dashboard';
-import HealthTracker from './pages/HealthTracker';
-import MedicalAnalysis from './pages/MedicalAnalysis';
-import Shop from './pages/Shop';
-import Wellness from './pages/Wellness';
-import Education from './pages/Education';
-import Auth from './pages/Auth';
-import ProfileSetup from './pages/ProfileSetup';
-import VirtualCard from './pages/VirtualCard';
+import Dashboard from './pages/Dashboard.tsx';
+import HealthTracker from './pages/HealthTracker.tsx';
+import MedicalAnalysis from './pages/MedicalAnalysis.tsx';
+import Shop from './pages/Shop.tsx';
+import Wellness from './pages/Wellness.tsx';
+import Education from './pages/Education.tsx';
+import Auth from './pages/Auth.tsx';
+import ProfileSetup from './pages/ProfileSetup.tsx';
+import VirtualCard from './pages/VirtualCard.tsx';
 
 const Logo = () => (
   <div className="flex items-center gap-3">
@@ -94,7 +93,6 @@ const Navbar = ({ onLogout }: { onLogout: () => void }) => {
         </div>
       </div>
 
-      {/* Mobile menu */}
       {isOpen && (
         <div className="lg:hidden bg-white border-t border-ceres-mint py-6 shadow-2xl animate-in slide-in-from-top-4">
           <div className="flex flex-col gap-1 px-4">
