@@ -1,7 +1,8 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { User, Phone, MapPin, Calendar, ArrowRight, ShieldCheck, Mail, Scale, ClipboardList, Navigation, Activity, Info, Baby, Check, AlertCircle, UserPlus, UserCheck, RefreshCcw } from 'lucide-react';
-import { UserProfile, RiskFactors } from '../types';
+import { User, Phone, MapPin, Calendar, ArrowRight, ShieldCheck, Mail, Scale, ClipboardList, Navigation, Activity, Info, Baby, Check, AlertCircle, UserPlus, UserCheck, RefreshCcw, Dumbbell, Heart, Stethoscope } from 'lucide-react';
+import { UserProfile, RiskFactors, ExamCategory, PrenatalControlTrack } from '../types.ts';
+import { Logo } from '../App.tsx';
 
 interface ProfileSetupProps {
   onComplete: () => void;
@@ -21,7 +22,7 @@ const COLOMBIA_DATA: Record<string, string[]> = {
 };
 
 const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
-  const [step, setStep] = useState(0); // 0: Entry Mode Selection, 1-4: Standard Steps
+  const [step, setStep] = useState(0); 
   const [geocoding, setGeocoding] = useState(false);
   const [isClassified, setIsClassified] = useState(false);
   const [isNewPatient, setIsNewPatient] = useState(true);
@@ -67,31 +68,6 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
     setStep(1);
   };
 
-  const imcData = useMemo(() => {
-    const heightM = formData.height / 100;
-    if (heightM === 0) return { imc: 0, category: 'N/A', goal: '0-0 kg' };
-    const imcValue = formData.initialWeight / (heightM * heightM);
-    
-    let category = '';
-    let goal = '';
-    
-    if (imcValue < 18.5) {
-      category = 'Bajo Peso';
-      goal = '12.5 - 18.0 kg';
-    } else if (imcValue < 25) {
-      category = 'Normal';
-      goal = '11.5 - 16.0 kg';
-    } else if (imcValue < 30) {
-      category = 'Sobrepeso';
-      goal = '7.0 - 11.5 kg';
-    } else {
-      category = 'Obesidad';
-      goal = '5.0 - 9.0 kg';
-    }
-    
-    return { imc: imcValue.toFixed(1), category, goal };
-  }, [formData.initialWeight, formData.height]);
-
   const handleEddChange = (eddValue: string) => {
     let calculatedWeeks = 0;
     if (eddValue) {
@@ -103,23 +79,6 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
       calculatedWeeks = Math.max(0, Math.floor(40 - weeksLeft));
     }
     setFormData(prev => ({ ...prev, edd: eddValue, gestationWeeks: calculatedWeeks }));
-  };
-
-  const handleGeocode = () => {
-    setGeocoding(true);
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          setFormData(prev => ({ ...prev, coordinates: { lat: pos.coords.latitude, lng: pos.coords.longitude } }));
-          setGeocoding(false);
-          alert("Ubicación geocodificada correctamente.");
-        },
-        () => {
-          setGeocoding(false);
-          alert("No se pudo obtener la ubicación. Por favor ingrésala manualmente.");
-        }
-      );
-    }
   };
 
   const determineRiskLevel = () => {
@@ -162,8 +121,8 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
   };
 
   const handleNext = () => {
-    if (step < 4) {
-      if (step === 3) {
+    if (step < 6) {
+      if (step === 4) {
         const heightM = formData.height / 100;
         const imcValue = formData.initialWeight / (heightM * heightM);
         let goalObj = { min: 11.5, max: 16, category: 'Normal' };
@@ -178,8 +137,6 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
         }));
       }
       setStep(step + 1);
-    } else if (!isClassified) {
-      setIsClassified(true);
     } else {
       const finalRisk = determineRiskLevel();
       localStorage.setItem('ceres_profile', JSON.stringify(formData));
@@ -193,8 +150,6 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
       const newCategoryState = { ...(prev.riskFactors[cat] as any) };
       const newValue = !newCategoryState[field];
       newCategoryState[field] = newValue;
-
-      if (step === 4) setIsClassified(false);
 
       if (cat === 'medical' && field === 'noRiskFactors' && newValue) {
         Object.keys(newCategoryState).forEach(key => { if (key !== 'noRiskFactors') newCategoryState[key] = false; });
@@ -232,37 +187,34 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
   };
 
   const isStep1Invalid = !formData.name || !formData.lastName || !formData.idNumber || !formData.phone || !formData.email || !formData.address || !formData.department || !formData.municipality;
-  const isStep4Valid = formData.riskFactors.currentPregnancy.noObstetricRiskFactors || 
-                       Object.entries(formData.riskFactors.currentPregnancy).some(([k, v]) => k !== 'noObstetricRiskFactors' && v === true);
 
   return (
     <div className="min-h-screen bg-ceres-light flex items-center justify-center p-4 md:p-8">
       <div className="max-w-6xl w-full bg-white rounded-[40px] shadow-2xl border border-white overflow-hidden flex flex-col md:flex-row h-[90vh] md:h-auto">
         <div className="md:w-1/3 bg-ceres-dark p-10 text-white flex flex-col justify-between">
-          <div className="space-y-10">
-            <div className="flex items-center gap-3">
-              <ShieldCheck className="w-10 h-10 text-ceres-primary" />
-              <div>
-                <h2 className="text-2xl font-serif font-bold tracking-tight">CERES</h2>
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-ceres-primary">Protocolo de Ingreso</p>
-              </div>
+          <div className="space-y-8">
+            <div className="flex flex-col items-center gap-2 p-6 bg-white rounded-[32px] shadow-lg">
+               <Logo className="h-20" />
             </div>
-            <div className="space-y-6">
+            
+            <div className="space-y-4 pt-4">
               {[
-                { n: 1, label: 'Identificación y Contacto' },
+                { n: 1, label: 'Identificación' },
                 { n: 2, label: 'Antecedentes Médicos' },
-                { n: 3, label: 'Biometría y Metas' },
-                { n: 4, label: 'Factores de Riesgo' }
+                { n: 3, label: 'Factores de Riesgo' },
+                { n: 4, label: 'Biometría y Metas' },
+                { n: 5, label: 'Carnet Digital' },
+                { n: 6, label: 'Actividad Física' }
               ].map(s => (
                 <div key={s.n} className={`flex items-center gap-4 transition-all duration-500 ${step === s.n ? 'translate-x-2' : 'opacity-40'}`}>
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 ${step === s.n ? 'bg-ceres-primary border-ceres-primary' : 'border-white'}`}>{s.n}</div>
-                  <span className="text-[10px] font-bold uppercase tracking-widest">{s.label}</span>
+                  <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold border-2 ${step === s.n ? 'bg-ceres-primary border-ceres-primary' : 'border-white'}`}>{s.n}</div>
+                  <span className="text-[9px] font-bold uppercase tracking-widest">{s.label}</span>
                 </div>
               ))}
             </div>
           </div>
-          <p className="text-[9px] text-ceres-sage leading-relaxed italic">
-            Clasificación clínica automatizada basada en guías de salud materna Ceres.
+          <p className="text-[9px] text-ceres-mint leading-relaxed italic opacity-60 text-center">
+            Acompañamiento clínico integral Ceres <br/> Ginecología y Obstetricia
           </p>
         </div>
 
@@ -271,81 +223,48 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
             <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700 h-full flex flex-col justify-center">
               <div className="text-center space-y-4">
                 <h3 className="text-4xl font-serif font-bold text-slate-800">Bienvenida a Ceres</h3>
-                <p className="text-slate-500 font-medium">Por favor indica tu situación actual para iniciar el protocolo.</p>
+                <p className="text-slate-500 font-medium">Protocolo de ingreso para el acompañamiento gestacional integral.</p>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <button 
-                  onClick={() => handleEntryMode(true)}
-                  className="group p-10 bg-white border-2 border-slate-100 rounded-[40px] hover:border-ceres-primary hover:bg-ceres-mint transition-all text-center space-y-6 shadow-sm hover:shadow-xl"
-                >
-                  <div className="w-20 h-20 bg-ceres-primary/10 rounded-3xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform">
-                    <UserPlus className="w-10 h-10 text-ceres-primary" />
-                  </div>
+                <button onClick={() => handleEntryMode(true)} className="group p-10 bg-white border-2 border-slate-100 rounded-[40px] hover:border-ceres-primary hover:bg-ceres-mint transition-all text-center space-y-6 shadow-sm hover:shadow-xl">
+                  <div className="w-20 h-20 bg-ceres-primary/10 rounded-3xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform"><UserPlus className="w-10 h-10 text-ceres-primary" /></div>
                   <div className="space-y-2">
                     <h4 className="text-xl font-bold text-slate-800">Paciente Nueva</h4>
-                    <p className="text-xs text-slate-500 font-medium px-4">Inicia tu expediente digital desde cero con acompañamiento IA.</p>
+                    <p className="text-xs text-slate-500 font-medium px-4">Inicia tu historial clínico unificado Ceres.</p>
                   </div>
                 </button>
-
-                <button 
-                  onClick={() => handleEntryMode(false)}
-                  className="group p-10 bg-white border-2 border-slate-100 rounded-[40px] hover:border-ceres-primary hover:bg-ceres-mint transition-all text-center space-y-6 shadow-sm hover:shadow-xl"
-                >
-                  <div className="w-20 h-20 bg-ceres-secondary/20 rounded-3xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform">
-                    <UserCheck className="w-10 h-10 text-ceres-primary" />
-                  </div>
+                <button onClick={() => handleEntryMode(false)} className="group p-10 bg-white border-2 border-slate-100 rounded-[40px] hover:border-ceres-primary hover:bg-ceres-mint transition-all text-center space-y-6 shadow-sm hover:shadow-xl">
+                  <div className="w-20 h-20 bg-ceres-secondary/20 rounded-3xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform"><UserCheck className="w-10 h-10 text-ceres-secondary" /></div>
                   <div className="space-y-2">
                     <h4 className="text-xl font-bold text-slate-800">Paciente Registrada</h4>
-                    <p className="text-xs text-slate-500 font-medium px-4">Conserva tus datos previos y actualiza tu estado gestacional.</p>
+                    <p className="text-xs text-slate-500 font-medium px-4">Actualiza tu estado y conserva datos previos.</p>
                   </div>
                 </button>
-              </div>
-
-              <div className="pt-10 flex items-center justify-center gap-4 text-slate-400">
-                <ShieldCheck className="w-5 h-5" />
-                <span className="text-[10px] font-bold uppercase tracking-widest">Seguridad de Datos Grado Médico</span>
               </div>
             </div>
           )}
 
           {step === 1 && (
             <div className="space-y-8 animate-in fade-in slide-in-from-right-10">
-              <div className="flex justify-between items-center">
-                <div className="flex flex-col">
-                  <h3 className="text-3xl font-serif font-bold text-slate-800">Perfil del Paciente</h3>
-                  {!isNewPatient && (
-                    <span className="text-[10px] font-bold text-ceres-primary uppercase tracking-widest mt-1 flex items-center gap-2">
-                      <RefreshCcw className="w-3 h-3" /> Datos Cargados del Expediente
-                    </span>
-                  )}
-                </div>
-                {isStep1Invalid && (
-                  <div className="flex items-center gap-2 px-3 py-1 bg-rose-50 rounded-full text-[10px] font-bold text-rose-500 uppercase">
-                    <Info className="w-3 h-3" />
-                    Pendientes
-                  </div>
-                )}
-              </div>
+              <h3 className="text-3xl font-serif font-bold text-slate-800">Identificación y Contacto</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-1">
                   <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Nombres Completos</label>
-                  <input type="text" className="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none border border-transparent focus:border-ceres-primary" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="Ej: María Paula" />
+                  <input type="text" className="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none border border-transparent focus:border-ceres-primary" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
                 </div>
                 <div className="space-y-1">
                   <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Apellidos</label>
-                  <input type="text" className="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none border border-transparent focus:border-ceres-primary" value={formData.lastName} onChange={e => setFormData({...formData, lastName: e.target.value})} placeholder="Ej: Gómez Martínez" />
+                  <input type="text" className="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none border border-transparent focus:border-ceres-primary" value={formData.lastName} onChange={e => setFormData({...formData, lastName: e.target.value})} />
                 </div>
                 <div className="grid grid-cols-3 gap-3">
                   <div className="space-y-1">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tipo</label>
-                    <select className="w-full px-3 py-4 bg-slate-50 rounded-2xl outline-none" value={formData.documentType} onChange={e => setFormData({...formData, documentType: e.target.value as any})}>
-                      <option value="CC">CC</option><option value="CE">CE</option><option value="TI">TI</option>
-                    </select>
+                    <select className="w-full px-3 py-4 bg-slate-50 rounded-2xl outline-none" value={formData.documentType} onChange={e => setFormData({...formData, documentType: e.target.value as any})}><option value="CC">CC</option><option value="CE">CE</option><option value="TI">TI</option></select>
                   </div>
                   <div className="col-span-2 space-y-1">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Número de Documento</label>
-                    <input type="text" className="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none border border-transparent focus:border-ceres-primary" value={formData.idNumber} onChange={e => setFormData({...formData, idNumber: e.target.value})} placeholder="1020304050" />
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Número</label>
+                    <input type="text" className="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none border border-transparent focus:border-ceres-primary" value={formData.idNumber} onChange={e => setFormData({...formData, idNumber: e.target.value})} />
                   </div>
                 </div>
                 <div className="space-y-1">
@@ -353,42 +272,24 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
                   <input type="number" className="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none" value={formData.age} onChange={e => setFormData({...formData, age: parseInt(e.target.value)})} />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Correo Electrónico</label>
-                  <div className="relative">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
-                    <input type="email" className="w-full pl-12 pr-5 py-4 bg-slate-50 rounded-2xl outline-none" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} placeholder="maria@ejemplo.com" />
-                  </div>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Correo</label>
+                  <input type="email" className="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Número Celular</label>
-                  <div className="relative">
-                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
-                    <input type="tel" className="w-full pl-12 pr-5 py-4 bg-slate-50 rounded-2xl outline-none" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} placeholder="3101234567" />
-                  </div>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Teléfono</label>
+                  <input type="tel" className="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
+                </div>
+                <div className="col-span-1 md:col-span-2 space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Dirección de Residencia</label>
+                  <input type="text" className="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none border border-transparent focus:border-ceres-primary" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} placeholder="Ej: Calle 123 #45-67" />
                 </div>
                 <div className="space-y-1">
                   <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Departamento</label>
-                  <select className="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none" value={formData.department} onChange={e => setFormData({...formData, department: e.target.value, municipality: ''})}>
-                    <option value="">Seleccione...</option>{Object.keys(COLOMBIA_DATA).map(d => <option key={d} value={d}>{d}</option>)}
-                  </select>
+                  <select className="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none" value={formData.department} onChange={e => setFormData({...formData, department: e.target.value, municipality: ''})}><option value="">Seleccione...</option>{Object.keys(COLOMBIA_DATA).map(d => <option key={d} value={d}>{d}</option>)}</select>
                 </div>
                 <div className="space-y-1">
                   <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Municipio</label>
-                  <select className="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none" value={formData.municipality} onChange={e => setFormData({...formData, municipality: e.target.value})} disabled={!formData.department}>
-                    <option value="">Seleccione...</option>{formData.department && COLOMBIA_DATA[formData.department].map(m => <option key={m} value={m}>{m}</option>)}
-                  </select>
-                </div>
-                <div className="md:col-span-2 space-y-1">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Dirección de Residencia</label>
-                  <div className="flex gap-2">
-                    <div className="relative flex-1">
-                      <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
-                      <input type="text" className="w-full pl-12 pr-5 py-4 bg-slate-50 rounded-2xl outline-none" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} placeholder="Ej: Calle 123 # 45-67 Torre 1 Apto 202" />
-                    </div>
-                    <button onClick={handleGeocode} className="p-4 bg-ceres-mint text-ceres-primary rounded-2xl hover:bg-ceres-primary hover:text-white transition-all shadow-sm">
-                      <Navigation className={`w-5 h-5 ${geocoding ? 'animate-spin' : ''}`} />
-                    </button>
-                  </div>
+                  <select className="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none" value={formData.municipality} onChange={e => setFormData({...formData, municipality: e.target.value})} disabled={!formData.department}><option value="">Seleccione...</option>{formData.department && COLOMBIA_DATA[formData.department].map(m => <option key={m} value={m}>{m}</option>)}</select>
                 </div>
               </div>
             </div>
@@ -397,29 +298,15 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
           {step === 2 && (
             <div className="space-y-8 animate-in fade-in slide-in-from-right-10">
               <h3 className="text-3xl font-serif font-bold text-slate-800">Antecedentes Médicos</h3>
-              <div className="p-6 bg-emerald-50 rounded-3xl border border-emerald-100 mb-4 cursor-pointer hover:bg-emerald-100/50 transition-all" onClick={() => toggleRF('medical', 'noRiskFactors')}>
+              <div className="p-6 bg-ceres-mint rounded-3xl border border-ceres-primary/10 mb-4 cursor-pointer" onClick={() => toggleRF('medical', 'noRiskFactors')}>
                 <div className="flex items-center gap-4">
-                  <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${formData.riskFactors.medical.noRiskFactors ? 'bg-emerald-500 border-emerald-500 text-white shadow-lg' : 'border-emerald-200'}`}>
-                    {formData.riskFactors.medical.noRiskFactors && <Check className="w-5 h-5" />}
-                  </div>
-                  <div>
-                    <span className="font-bold text-emerald-900 block">Sin factores de riesgo médico</span>
-                    <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-widest">Estado saludable inicial</span>
-                  </div>
+                  <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${formData.riskFactors.medical.noRiskFactors ? 'bg-ceres-primary border-ceres-primary text-white shadow-lg' : 'border-ceres-primary/20'}`}>{formData.riskFactors.medical.noRiskFactors && <Check className="w-5 h-5" />}</div>
+                  <div><span className="font-bold text-slate-800 block">Sin factores de riesgo médico</span></div>
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[
-                  { c: 'medical', f: 'hypertensionChronic', l: 'Hipertensión Crónica' },
-                  { c: 'medical', f: 'diabetesPreexisting', l: 'Diabetes Mellitus' },
-                  { c: 'medical', f: 'renalPathology', l: 'Enfermedad Renal' },
-                  { c: 'medical', f: 'cardiacPathology', l: 'Cardiopatías' },
-                  { c: 'medical', f: 'hiv_syphilis', l: 'VIH / Sífilis gestacional' },
-                  { c: 'reproductive', f: 'previousAbortion2_plus', l: '2+ Abortos Previos' },
-                  { c: 'reproductive', f: 'previousPretermBirth', l: 'Parto Pretérmino previo' },
-                  { c: 'reproductive', f: 'previousPreeclampsia', l: 'Preeclampsia previa' }
-                ].map(item => (
-                  <label key={item.f} className={`flex items-center gap-4 p-4 rounded-2xl cursor-pointer border transition-all ${ (formData.riskFactors[item.c as keyof RiskFactors] as any)[item.f] ? 'bg-ceres-mint border-ceres-primary' : 'bg-slate-50 border-transparent hover:border-ceres-mint' } ${formData.riskFactors.medical.noRiskFactors ? 'opacity-40 pointer-events-none' : ''}`}>
+                {[{ c: 'medical', f: 'hypertensionChronic', l: 'Hipertensión Crónica' }, { c: 'medical', f: 'diabetesPreexisting', l: 'Diabetes Mellitus' }, { c: 'reproductive', f: 'previousAbortion2_plus', l: '2+ Abortos Previos' }, { c: 'reproductive', f: 'previousPreeclampsia', l: 'Preeclampsia previa' }].map(item => (
+                  <label key={item.f} className={`flex items-center gap-4 p-4 rounded-2xl cursor-pointer border transition-all ${(formData.riskFactors[item.c as keyof RiskFactors] as any)[item.f] ? 'bg-ceres-mint border-ceres-primary' : 'bg-slate-50 border-transparent'} ${formData.riskFactors.medical.noRiskFactors ? 'opacity-40 pointer-events-none' : ''}`}>
                     <input type="checkbox" className="w-5 h-5 accent-ceres-primary" checked={(formData.riskFactors[item.c as keyof RiskFactors] as any)[item.f]} onChange={() => toggleRF(item.c as keyof RiskFactors, item.f)} />
                     <span className="text-sm font-medium text-slate-700">{item.l}</span>
                   </label>
@@ -429,130 +316,120 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
           )}
 
           {step === 3 && (
-            <div className="space-y-10 animate-in fade-in slide-in-from-right-10">
-              <h3 className="text-3xl font-serif font-bold text-slate-800">Biometría y Metas</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="p-6 bg-slate-50 rounded-3xl space-y-3">
-                  <div className="flex items-center gap-3 text-ceres-primary">
-                    <Scale className="w-5 h-5" />
-                    <span className="text-[10px] font-bold uppercase tracking-widest">Peso Inicial (kg)</span>
-                  </div>
-                  <input type="number" step="0.1" className="bg-transparent text-3xl font-serif font-bold text-slate-800 outline-none w-full" value={formData.initialWeight} onChange={e => setFormData({...formData, initialWeight: parseFloat(e.target.value) || 0})} />
-                </div>
-                <div className="p-6 bg-slate-50 rounded-3xl space-y-3">
-                  <div className="flex items-center gap-3 text-ceres-primary">
-                    <Activity className="w-5 h-5" />
-                    <span className="text-[10px] font-bold uppercase tracking-widest">Talla (cm)</span>
-                  </div>
-                  <input type="number" className="bg-transparent text-3xl font-serif font-bold text-slate-800 outline-none w-full" value={formData.height} onChange={e => setFormData({...formData, height: parseInt(e.target.value) || 0})} />
-                </div>
-                <div className="p-6 bg-slate-50 rounded-3xl space-y-3">
-                  <div className="flex items-center gap-3 text-ceres-primary">
-                    <Calendar className="w-5 h-5" />
-                    <span className="text-[10px] font-bold uppercase tracking-widest">FPP (F. Probable Parto)</span>
-                  </div>
-                  <input type="date" className="bg-transparent text-xl font-bold text-slate-800 outline-none w-full" value={formData.edd} onChange={e => handleEddChange(e.target.value)} />
-                </div>
-                <div className="p-6 bg-slate-50 rounded-3xl space-y-3">
-                  <div className="flex items-center gap-3 text-ceres-primary">
-                    <Baby className="w-5 h-5" />
-                    <span className="text-[10px] font-bold uppercase tracking-widest">Semanas (Calculado)</span>
-                  </div>
-                  <input type="number" className="bg-transparent text-3xl font-serif font-bold text-slate-800 outline-none w-full" value={formData.gestationWeeks} readOnly />
+            <div className="space-y-8 animate-in fade-in slide-in-from-right-10">
+              <h3 className="text-3xl font-serif font-bold text-slate-800">Factores de Riesgo Obstétrico</h3>
+              <div className="p-6 bg-rose-50 rounded-3xl border border-rose-100 mb-4 cursor-pointer" onClick={() => toggleRF('currentPregnancy', 'noObstetricRiskFactors')}>
+                <div className="flex items-center gap-4">
+                  <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${formData.riskFactors.currentPregnancy.noObstetricRiskFactors ? 'bg-rose-500 border-rose-500 text-white' : 'border-rose-200'}`}>{formData.riskFactors.currentPregnancy.noObstetricRiskFactors && <Check className="w-5 h-5" />}</div>
+                  <span className="font-bold text-rose-900 block">Sin factores de riesgo obstétrico</span>
                 </div>
               </div>
-              <div className="p-8 bg-ceres-primary/10 rounded-[40px] border border-ceres-primary/20 space-y-6">
-                <div className="flex items-center justify-between">
-                  <h4 className="font-serif font-bold text-xl text-ceres-dark">Clasificación Nutricional</h4>
-                  <span className="text-xl font-bold text-ceres-primary">{imcData.imc}</span>
-                </div>
-                <div className="pt-4 border-t border-ceres-primary/20 flex items-center justify-between">
-                  <p className="text-sm font-medium text-slate-600">Meta ganancia total:</p>
-                  <p className="text-xl font-bold text-ceres-dark">{imcData.goal}</p>
-                </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[{ c: 'currentPregnancy', f: 'multiplePregnancy', l: 'Embarazo Múltiple' }, { c: 'currentPregnancy', f: 'threatenedPreterm', l: 'Amenaza Parto Pretérmino' }, { c: 'currentPregnancy', f: 'hemorrhage', l: 'Hemorragia Gestacional' }, { c: 'medical', f: 'diabetesGestational', l: 'Diabetes Gestacional' }].map(item => (
+                  <label key={item.f} className={`flex items-center gap-4 p-4 rounded-2xl cursor-pointer border transition-all ${(formData.riskFactors[item.c as keyof RiskFactors] as any)[item.f] ? 'bg-rose-50 border-rose-200' : 'bg-slate-50 border-transparent'} ${formData.riskFactors.currentPregnancy.noObstetricRiskFactors ? 'opacity-40 pointer-events-none' : ''}`}>
+                    <input type="checkbox" className="w-5 h-5 accent-rose-500" checked={(formData.riskFactors[item.c as keyof RiskFactors] as any)[item.f]} onChange={() => toggleRF(item.c as keyof RiskFactors, item.f)} />
+                    <span className="text-sm font-medium text-slate-700">{item.l}</span>
+                  </label>
+                ))}
               </div>
             </div>
           )}
 
           {step === 4 && (
+            <div className="space-y-10 animate-in fade-in slide-in-from-right-10">
+              <h3 className="text-3xl font-serif font-bold text-slate-800">Biometría y Metas</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="p-6 bg-slate-50 rounded-3xl space-y-3">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-ceres-primary">Peso Inicial (kg)</label>
+                  <input type="number" step="0.1" className="bg-transparent text-3xl font-serif font-bold text-slate-800 outline-none w-full" value={formData.initialWeight} onChange={e => setFormData({...formData, initialWeight: parseFloat(e.target.value) || 0})} />
+                </div>
+                <div className="p-6 bg-slate-50 rounded-3xl space-y-3">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-ceres-primary">Talla (cm)</label>
+                  <input type="number" className="bg-transparent text-3xl font-serif font-bold text-slate-800 outline-none w-full" value={formData.height} onChange={e => setFormData({...formData, height: parseInt(e.target.value) || 0})} />
+                </div>
+                <div className="p-6 bg-slate-50 rounded-3xl space-y-3">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-ceres-primary">Fecha Probable Parto</label>
+                  <input type="date" className="bg-transparent text-xl font-bold text-slate-800 outline-none w-full" value={formData.edd} onChange={e => handleEddChange(e.target.value)} />
+                </div>
+                <div className="p-6 bg-slate-50 rounded-3xl space-y-3">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-ceres-primary">Semanas Actuales</label>
+                  <div className="text-3xl font-serif font-bold text-slate-800">{formData.gestationWeeks}</div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {step === 5 && (
             <div className="space-y-8 animate-in fade-in slide-in-from-right-10">
-              <h3 className="text-3xl font-serif font-bold text-slate-800">Factores de Riesgo Obstétrico</h3>
-              
-              {!isClassified ? (
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-ceres-primary rounded-2xl flex items-center justify-center text-white shadow-lg"><ClipboardList className="w-6 h-6" /></div>
+                <h3 className="text-3xl font-serif font-bold text-slate-800">Carnet Digital Ceres</h3>
+              </div>
+              <p className="text-slate-500 font-medium">Este es tu registro unificado de salud. Aquí se marcarán tus 10 controles prenatales (C-N-E) y laboratorios.</p>
+              <div className="p-8 bg-ceres-mint/30 rounded-[40px] border border-ceres-primary/10">
+                <div className="flex items-center gap-4 mb-6">
+                   <div className="w-8 h-8 bg-ceres-primary rounded-xl flex items-center justify-center text-white"><Check className="w-4 h-4" /></div>
+                   <p className="text-sm font-bold text-slate-700 uppercase tracking-widest">Protocolo Médico Ceres Activado</p>
+                </div>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="text-center p-4 bg-white rounded-3xl border border-slate-100 shadow-sm">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">C</span>
+                    <span className="text-[9px] text-slate-600">Control</span>
+                  </div>
+                  <div className="text-center p-4 bg-white rounded-3xl border border-slate-100 shadow-sm">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">N</span>
+                    <span className="text-[9px] text-slate-600">Nutrición</span>
+                  </div>
+                  <div className="text-center p-4 bg-white rounded-3xl border border-slate-100 shadow-sm">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">E</span>
+                    <span className="text-[9px] text-slate-600">Ejercicio</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {step === 6 && (
+            <div className="space-y-8 animate-in fade-in slide-in-from-right-10">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-ceres-secondary rounded-2xl flex items-center justify-center text-white shadow-lg"><Dumbbell className="w-6 h-6" /></div>
+                <h3 className="text-3xl font-serif font-bold text-slate-800">Actividad Física en Embarazo</h3>
+              </div>
+              <div className="bg-white p-8 rounded-[40px] border border-ceres-secondary/20 shadow-sm space-y-6">
+                <h4 className="text-sm font-bold text-ceres-dark uppercase tracking-widest border-b border-ceres-mint pb-4">Prescripción de Ejercicio</h4>
                 <div className="space-y-6">
-                  <div className="p-6 bg-emerald-50 rounded-3xl border border-emerald-100 cursor-pointer hover:bg-emerald-100 transition-all" onClick={() => toggleRF('currentPregnancy', 'noObstetricRiskFactors')}>
-                    <div className="flex items-center gap-4">
-                      <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${formData.riskFactors.currentPregnancy.noObstetricRiskFactors ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-emerald-200'}`}>
-                        {formData.riskFactors.currentPregnancy.noObstetricRiskFactors && <Check className="w-5 h-5" />}
-                      </div>
-                      <div>
-                        <span className="font-bold text-emerald-900 block">Sin factores de riesgo obstétrico</span>
-                        <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-widest">Embarazo sin complicaciones actuales</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {[
-                      { c: 'currentPregnancy', f: 'multiplePregnancy', l: 'Embarazo Múltiple' },
-                      { c: 'currentPregnancy', f: 'threatenedPreterm', l: 'Amenaza Parto Pretérmino' },
-                      { c: 'currentPregnancy', f: 'rciu', l: 'RCIU Detectado' },
-                      { c: 'currentPregnancy', f: 'poly_oligohydramnios', l: 'Alteración Líq. Amniótico' },
-                      { c: 'currentPregnancy', f: 'hemorrhage', l: 'Hemorragia Gestacional' },
-                      { c: 'medical', f: 'diabetesGestational', l: 'Diabetes Gestacional' },
-                      { c: 'medical', f: 'hypertensionGestational', l: 'HTA Gestacional' },
-                      { c: 'sociodemographic', f: 'multipara', l: 'Gran Multípara (>3)' }
-                    ].map(item => (
-                      <label key={item.f} className={`flex items-center gap-4 p-4 rounded-2xl cursor-pointer border transition-all ${ (formData.riskFactors[item.c as keyof RiskFactors] as any)[item.f] ? 'bg-rose-50 border-rose-200' : 'bg-slate-50 border-transparent hover:border-slate-200' } ${formData.riskFactors.currentPregnancy.noObstetricRiskFactors ? 'opacity-40 pointer-events-none' : ''}`}>
-                        <input type="checkbox" className="w-5 h-5 accent-rose-500" checked={(formData.riskFactors[item.c as keyof RiskFactors] as any)[item.f]} onChange={() => toggleRF(item.c as keyof RiskFactors, item.f)} />
-                        <span className="text-sm font-medium text-slate-700">{item.l}</span>
-                      </label>
-                    ))}
-                  </div>
+                   <div className="flex items-center justify-between">
+                     <span className="text-xs font-bold text-slate-600">Mamá Deportista / Activa</span>
+                     <div className="w-10 h-10 bg-ceres-mint rounded-xl flex items-center justify-center"><Check className="w-5 h-5 text-ceres-primary" /></div>
+                   </div>
+                   <div className="grid grid-cols-2 gap-4">
+                     <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                        <span className="text-[10px] font-bold text-ceres-primary uppercase block">Aeróbico</span>
+                        <span className="text-[9px] text-slate-500">2 a 3 veces/semana</span>
+                     </div>
+                     <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                        <span className="text-[10px] font-bold text-ceres-secondary uppercase block">Fuerza</span>
+                        <span className="text-[9px] text-slate-500">Propios límites</span>
+                     </div>
+                   </div>
                 </div>
-              ) : (
-                <div className="animate-in zoom-in-95 duration-500">
-                  <div className={`p-10 rounded-[40px] border flex flex-col items-center text-center gap-8 ${determineRiskLevel() === 'Alto' ? 'bg-rose-50 border-rose-200' : 'bg-emerald-50 border-emerald-200'}`}>
-                    <div className={`w-20 h-20 rounded-[28px] flex items-center justify-center text-white shadow-xl ${determineRiskLevel() === 'Alto' ? 'bg-rose-500' : 'bg-emerald-500'}`}>
-                      {determineRiskLevel() === 'Alto' ? <AlertCircle className="w-10 h-10" /> : <ShieldCheck className="w-10 h-10" />}
-                    </div>
-                    <div>
-                      <p className={`text-[10px] font-bold uppercase tracking-[0.3em] ${determineRiskLevel() === 'Alto' ? 'text-rose-500' : 'text-emerald-500'}`}>Resultado del Análisis</p>
-                      <h4 className={`text-4xl font-serif font-bold mt-2 ${determineRiskLevel() === 'Alto' ? 'text-rose-900' : 'text-emerald-900'}`}>Riesgo {determineRiskLevel()}</h4>
-                      <p className="text-slate-500 text-sm mt-4 max-w-sm font-medium leading-relaxed">
-                        {determineRiskLevel() === 'Alto' 
-                          ? 'Se han identificado condiciones que requieren un seguimiento estrecho por parte de especialistas Ceres.' 
-                          : 'Tu perfil indica un curso normal del embarazo. Continúa con tus controles periódicos Ceres.'}
-                      </p>
-                    </div>
-                  </div>
-                  <button onClick={() => setIsClassified(false)} className="mt-6 text-slate-400 font-bold uppercase tracking-widest text-[10px] hover:text-ceres-primary mx-auto block">Modificar factores</button>
+                <div className="p-4 bg-amber-50 rounded-2xl border border-amber-100 flex items-start gap-4">
+                   <AlertCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+                   <p className="text-[9px] font-bold text-amber-900 leading-relaxed uppercase tracking-wide">
+                     CONSULTE A SU MÉDICO ANTES DE AUMENTAR SU NIVEL DE ACTIVIDAD. EVITE AMBIENTES CÁLIDOS Y HÚMEDOS.
+                   </p>
                 </div>
-              )}
+              </div>
             </div>
           )}
 
-          {step > 0 && (
-            <div className="mt-16 flex items-center justify-between">
-              <button 
-                onClick={() => {
-                  if (step === 1) setStep(0);
-                  else setStep(step - 1);
-                }} 
-                className="text-slate-300 font-bold uppercase tracking-widest text-[10px] hover:text-ceres-primary transition-colors"
-              >
-                Regresar
-              </button>
-              <button 
-                onClick={handleNext} 
-                disabled={(step === 1 && isStep1Invalid) || (step === 4 && !isStep4Valid && !isClassified)} 
-                className="bg-ceres-primary hover:bg-ceres-dark disabled:bg-slate-100 disabled:text-slate-300 text-white px-12 py-5 rounded-[24px] font-bold tracking-[0.2em] text-[10px] flex items-center gap-4 transition-all shadow-2xl shadow-ceres-primary/20 group"
-              >
-                {step === 4 ? (isClassified ? 'FINALIZAR PROTOCOLO' : 'VER CLASIFICACIÓN') : 'SIGUIENTE PASO'}
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1" />
-              </button>
-            </div>
-          )}
+          <div className="mt-12 flex items-center justify-between">
+            <button onClick={() => step > 1 ? setStep(step - 1) : setStep(0)} className="text-slate-300 font-bold uppercase tracking-widest text-[10px] hover:text-ceres-primary">Regresar</button>
+            <button onClick={handleNext} disabled={(step === 1 && isStep1Invalid)} className="bg-ceres-primary hover:bg-ceres-dark disabled:bg-slate-100 disabled:text-slate-300 text-white px-10 py-5 rounded-[24px] font-bold tracking-[0.2em] text-[10px] flex items-center gap-4 transition-all shadow-xl shadow-ceres-primary/20 group">
+              {step === 6 ? 'FINALIZAR' : 'SIGUIENTE PASO'}
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1" />
+            </button>
+          </div>
         </div>
       </div>
     </div>

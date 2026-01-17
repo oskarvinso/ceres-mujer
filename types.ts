@@ -28,6 +28,7 @@ export interface PrenatalControlTrack {
   hasControl: boolean;
   hasNutrition: boolean;
   hasExercise: boolean;
+  hasDocument: boolean;
   completed: boolean;
 }
 

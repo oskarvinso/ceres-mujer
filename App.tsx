@@ -10,7 +10,8 @@ import {
   LayoutDashboard, 
   Menu,
   X,
-  Fingerprint
+  Fingerprint,
+  Sparkles
 } from 'lucide-react';
 
 import Dashboard from './pages/Dashboard.tsx';
@@ -21,25 +22,50 @@ import Education from './pages/Education.tsx';
 import Auth from './pages/Auth.tsx';
 import ProfileSetup from './pages/ProfileSetup.tsx';
 import VirtualCard from './pages/VirtualCard.tsx';
+import MedicalAnalysis from './pages/MedicalAnalysis.tsx';
 
-const Logo = () => (
-  <div className="flex items-center gap-3">
-    <div className="w-12 h-12 flex items-center justify-center overflow-hidden">
-      <img 
-        src="https://raw.githubusercontent.com/StackBlitz/stackblitz-images/main/ceres-logo-placeholder.png" 
-        alt="Ceres Logo" 
-        className="w-full h-full object-contain"
-        onError={(e) => {
-          // Fallback if image not found: use a styled mother-child icon
-          const target = e.target as HTMLImageElement;
-          target.style.display = 'none';
-          target.parentElement!.innerHTML = `<div class="w-10 h-10 bg-gradient-to-br from-ceres-primary to-ceres-secondary rounded-full flex items-center justify-center shadow-lg"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></div>`;
-        }}
-      />
+/**
+ * Componente de Logo Oficial de Ceres Mujer
+ * Basado fielmente en la imagen de marca proporcionada:
+ * - Emblema de madre e hijo abrazados.
+ * - Paleta de colores púrpura real y magenta vibrante.
+ * - Tipografía Serif elegante para el nombre principal.
+ */
+export const Logo = ({ className = "h-16" }: { className?: string }) => (
+  <div className={`flex items-center gap-4 ${className}`}>
+    <div className="h-full aspect-square relative shrink-0">
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full drop-shadow-md">
+        <defs>
+          <linearGradient id="purpleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#8E24AA" />
+            <stop offset="100%" stopColor="#4A148C" />
+          </linearGradient>
+          <linearGradient id="magentaGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#D81B60" />
+            <stop offset="100%" stopColor="#880E4F" />
+          </linearGradient>
+        </defs>
+        
+        {/* Envolvente protector (Swoosh) */}
+        <path d="M75 15 C 95 30 95 70 75 85 C 55 100 20 90 10 70" stroke="url(#purpleGradient)" strokeWidth="2" strokeLinecap="round" opacity="0.3" />
+        <path d="M80 25 C 95 40 95 65 80 80" stroke="url(#magentaGradient)" strokeWidth="1.5" strokeLinecap="round" opacity="0.4" />
+
+        {/* Figura de la Madre (Púrpura) */}
+        <circle cx="28" cy="35" r="12" fill="url(#purpleGradient)" />
+        <path d="M10 65 C 10 50 25 45 40 45 C 55 45 65 55 65 75 C 65 95 45 105 25 95 C 10 85 10 75 10 65" fill="url(#purpleGradient)" />
+
+        {/* Figura del Hijo (Magenta) */}
+        <circle cx="48" cy="48" r="8" fill="url(#magentaGradient)" />
+        <path d="M38 78 C 38 68 45 62 55 62 C 65 62 72 68 72 82 C 72 92 62 98 52 94 C 42 90 38 85 38 78" fill="url(#magentaGradient)" />
+      </svg>
     </div>
-    <div className="flex flex-col">
-      <span className="font-serif text-xl font-bold text-ceres-dark leading-none tracking-tight">CERES</span>
-      <span className="text-[9px] uppercase tracking-[0.3em] text-ceres-secondary font-bold">Ser Mujer</span>
+    
+    <div className="flex flex-col justify-center">
+      <h1 className="font-serif text-3xl font-bold text-[#4A148C] leading-none tracking-tight">Ceres</h1>
+      <div className="flex flex-col mt-0.5">
+        <span className="text-[9px] italic font-medium text-[#D81B60] leading-tight font-sans">Mujer, salud y vida</span>
+        <span className="text-[7px] font-bold uppercase tracking-[0.2em] text-[#4A148C] leading-tight mt-0.5">Ginecología y Obstetricia</span>
+      </div>
     </div>
   </div>
 );
@@ -51,6 +77,7 @@ const Navbar = ({ onLogout }: { onLogout: () => void }) => {
   const navItems = [
     { path: '/', icon: LayoutDashboard, label: 'Inicio' },
     { path: '/salud', icon: Activity, label: 'Mi Salud' },
+    { path: '/analisis', icon: Sparkles, label: 'IA Médica' }, 
     { path: '/carnet', icon: Fingerprint, label: 'Carnet' },
     { path: '/bienestar', icon: PlayCircle, label: 'Estudio' },
     { path: '/tienda', icon: ShoppingBag, label: 'Boutique' },
@@ -58,12 +85,12 @@ const Navbar = ({ onLogout }: { onLogout: () => void }) => {
   ];
 
   return (
-    <nav className="bg-white/80 backdrop-blur-md border-b border-ceres-mint sticky top-0 z-50">
+    <nav className="bg-white/95 backdrop-blur-md border-b border-ceres-mint sticky top-0 z-50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-20">
+        <div className="flex justify-between h-24">
           <div className="flex items-center">
             <Link to="/">
-              <Logo />
+              <Logo className="h-16" />
             </Link>
           </div>
           
@@ -72,7 +99,7 @@ const Navbar = ({ onLogout }: { onLogout: () => void }) => {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all ${
                   location.pathname === item.path
                     ? 'bg-ceres-primary text-white shadow-lg shadow-ceres-primary/20'
                     : 'text-slate-500 hover:text-ceres-primary hover:bg-ceres-mint'
@@ -168,6 +195,7 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/salud" element={<HealthTracker />} />
+            <Route path="/analisis" element={<MedicalAnalysis />} />
             <Route path="/carnet" element={<VirtualCard />} />
             <Route path="/tienda" element={<Shop />} />
             <Route path="/bienestar" element={<Wellness />} />
@@ -175,12 +203,12 @@ const App: React.FC = () => {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
-        <footer className="bg-white border-t border-ceres-mint py-16 px-4">
-          <div className="max-w-7xl mx-auto flex flex-col items-center text-center space-y-8">
-            <Logo />
+        <footer className="bg-white border-t border-ceres-mint py-20 px-4">
+          <div className="max-w-7xl mx-auto flex flex-col items-center text-center space-y-10">
+            <Logo className="h-28" />
             <p className="text-slate-400 text-sm max-w-lg leading-relaxed font-medium">
               Especialistas en ecografía a domicilio y salud integral para la mujer. <br/>
-              Acompañándote en el viaje más importante de tu vida.
+              Acompañándote en el viaje más importante de tu vida con la mejor tecnología y calidez humana.
             </p>
             <div className="flex gap-8 text-[10px] font-bold uppercase tracking-[0.2em] text-ceres-primary">
               <a href="#" className="hover:text-ceres-dark transition-colors">Servicios</a>
@@ -188,7 +216,7 @@ const App: React.FC = () => {
               <a href="#" className="hover:text-ceres-dark transition-colors">Soporte</a>
             </div>
             <div className="pt-8 border-t border-ceres-mint w-full flex flex-col md:flex-row justify-between items-center gap-4 text-[9px] text-slate-300 font-bold tracking-widest uppercase">
-              <span>© 2024 Ceres Ecografía en Casa - Ser Mujer</span>
+              <span>© 2024 Ceres Mujer - Ginecología y Obstetricia</span>
               <div className="flex gap-6">
                 <span>Protección de Datos</span>
                 <span>Terminos & Condiciones</span>

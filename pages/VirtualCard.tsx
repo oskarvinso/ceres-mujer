@@ -13,7 +13,16 @@ import {
   Utensils,
   Dumbbell,
   ClipboardList,
-  Edit3
+  Edit3,
+  Heart,
+  Scale,
+  Thermometer,
+  Info,
+  Droplets,
+  Zap,
+  FileText,
+  Mail,
+  Loader2
 } from 'lucide-react';
 import { UserProfile, ExamCategory, PrenatalExam, PrenatalControlTrack } from '../types.ts';
 
@@ -54,61 +63,30 @@ const INITIAL_EXAM_SCHEDULE: ExamCategory[] = [
       { id: 'e26', name: 'Coombs Indirecto semana 16', status: 'pending' },
       { id: 'e27', name: 'Coombs Indirecto semana 20', status: 'pending' },
     ]
-  },
-  {
-    id: 'cat3',
-    title: 'Exámenes Semanas 32 a 36',
-    exams: [
-      { id: 'e30', name: 'HG y HCTO', status: 'pending' },
-      { id: 'e31', name: 'VDRL', status: 'pending' },
-      { id: 'e32', name: 'HIV', status: 'pending' },
-      { id: 'e33', name: 'Ecografía Obstétrica', status: 'pending' },
-      { id: 'e34', name: 'Monitoreo fetal', status: 'pending' },
-      { id: 'e35', name: 'Perfil Biofísico', status: 'pending' },
-      { id: 'e36', name: 'Uroanalisis', status: 'pending' },
-      { id: 'e37', name: 'Grupo Streptococo grupo B (35-37)', status: 'pending' },
-      { id: 'e38', name: 'IFI CHALAMIDIA', status: 'pending' },
-    ]
-  },
-  {
-    id: 'cat4',
-    title: 'Exámenes Opcionales',
-    exams: [
-      { id: 'e40', name: 'GOTA GRUESA', status: 'pending' },
-      { id: 'e41', name: 'Trombofilia (Homociteinemia, etc)', status: 'pending' },
-      { id: 'e42', name: 'Coprologico', status: 'pending' },
-      { id: 'e43', name: 'Coombs Directo', status: 'pending' },
-      { id: 'e44', name: 'Electrocardiograma', status: 'pending' },
-      { id: 'e45', name: 'Ecocardiograma', status: 'pending' },
-      { id: 'e46', name: 'Prueba de tuberculina', status: 'pending' },
-      { id: 'e47', name: 'Hemoglobina Glicosilada HbA1C', status: 'pending' },
-      { id: 'e48', name: 'Curva de tolerancia Glucos 75g', status: 'pending' },
-      { id: 'e49', name: 'Niveles de Ácido Folico', status: 'pending' },
-      { id: 'e50', name: 'Proteinuria en 24 horas', status: 'pending' },
-    ]
   }
 ];
 
 const INITIAL_CONTROLS: PrenatalControlTrack[] = [
-  { id: 'c1', title: '1. Como crece tu bebé durante el embarazo', hasControl: false, hasNutrition: false, hasExercise: false, completed: false },
-  { id: 'c2', title: '2. Molestias comunes en tu embarazo', hasControl: false, hasNutrition: false, hasExercise: false, completed: false },
-  { id: 'c3', title: '3. ¿Crees tener problemas genéticos?', hasControl: false, hasNutrition: false, hasExercise: false, completed: false },
-  { id: 'c4', title: '4. Postura en el embarazo', hasControl: false, hasNutrition: false, hasExercise: false, completed: false },
-  { id: 'c5', title: '5. Mamá activa mas esperanza de vida', hasControl: false, hasNutrition: false, hasExercise: false, completed: false },
-  { id: 'c6', title: '6. Relación mente cerebro y parto prematuro', hasControl: false, hasNutrition: false, hasExercise: false, completed: false },
-  { id: 'c7', title: '7. Factor RH y sexualidad', hasControl: false, hasNutrition: false, hasExercise: false, completed: false },
-  { id: 'c8', title: '8. Prepara tu parto', hasControl: false, hasNutrition: false, hasExercise: false, completed: false },
-  { id: 'c9', title: '9. Vence el dolor', hasControl: false, hasNutrition: false, hasExercise: false, completed: false },
-  { id: 'c10', title: '10. Vía del parto', hasControl: false, hasNutrition: false, hasExercise: false, completed: false },
+  { id: 'c1', title: '1. Como crece tu bebé durante el embarazo', hasControl: false, hasNutrition: false, hasExercise: false, hasDocument: false, completed: false },
+  { id: 'c2', title: '2. Molestias comunes en tu embarazo', hasControl: false, hasNutrition: false, hasExercise: false, hasDocument: false, completed: false },
+  { id: 'c3', title: '3. ¿Crees tener problemas genéticos?', hasControl: false, hasNutrition: false, hasExercise: false, hasDocument: false, completed: false },
+  { id: 'c4', title: '4. Postura en el embarazo', hasControl: false, hasNutrition: false, hasExercise: false, hasDocument: false, completed: false },
+  { id: 'c5', title: '5. Mamá activa mas esperanza de vida', hasControl: false, hasNutrition: false, hasExercise: false, hasDocument: false, completed: false },
+  { id: 'c6', title: '6. Relación mente cerebro y parto prematuro', hasControl: false, hasNutrition: false, hasExercise: false, hasDocument: false, completed: false },
+  { id: 'c7', title: '7. Factor RH y sexualidad', hasControl: false, hasNutrition: false, hasExercise: false, hasDocument: false, completed: false },
+  { id: 'c8', title: '8. Prepara tu parto', hasControl: false, hasNutrition: false, hasExercise: false, hasDocument: false, completed: false },
+  { id: 'c9', title: '9. Vence el dolor', hasControl: false, hasNutrition: false, hasExercise: false, hasDocument: false, completed: false },
+  { id: 'c10', title: '10. Vía del parto', hasControl: false, hasNutrition: false, hasExercise: false, hasDocument: false, completed: false },
 ];
 
-const BLOOD_TYPES = ['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-'];
-
 const VirtualCard: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<'labs' | 'activity'>('labs');
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [examSchedule, setExamSchedule] = useState<ExamCategory[]>([]);
   const [prenatalControls, setPrenatalControls] = useState<PrenatalControlTrack[]>([]);
   const [expandedCatId, setExpandedCatId] = useState<string | null>('cat1');
+  const [sendingDocId, setSendingDocId] = useState<string | null>(null);
+  const [showToast, setShowToast] = useState<string | null>(null);
 
   useEffect(() => {
     const savedProfile = localStorage.getItem('ceres_profile');
@@ -154,24 +132,7 @@ const VirtualCard: React.FC = () => {
     saveUpdates(updated, prenatalControls);
   };
 
-  const handleValueChange = (catId: string, examId: string, val: string) => {
-    const updated = examSchedule.map(cat => {
-      if (cat.id === catId) {
-        return {
-          ...cat,
-          exams: cat.exams.map(ex => {
-            if (ex.id === examId) return { ...ex, resultValue: val };
-            return ex;
-          })
-        };
-      }
-      return cat;
-    });
-    setExamSchedule(updated);
-    saveUpdates(updated, prenatalControls);
-  };
-
-  const handleControlToggle = (controlId: string, field: 'hasControl' | 'hasNutrition' | 'hasExercise') => {
+  const handleControlToggle = (controlId: string, field: 'hasControl' | 'hasNutrition' | 'hasExercise' | 'hasDocument') => {
     const updated = prenatalControls.map(c => {
       if (c.id === controlId) {
         return { ...c, [field]: !c[field] };
@@ -182,28 +143,16 @@ const VirtualCard: React.FC = () => {
     saveUpdates(examSchedule, updated);
   };
 
-  const handleBloodTypeChange = (bt: string) => {
-    if (profile) {
-      const updated = examSchedule.map(cat => {
-        if (cat.id === 'cat1') {
-          return {
-            ...cat,
-            exams: cat.exams.map(ex => {
-              if (ex.id === 'e1') return { ...ex, status: 'normal' as const, resultValue: bt };
-              return ex;
-            })
-          };
-        }
-        return cat;
-      });
-      setExamSchedule(updated);
-      saveUpdates(updated, prenatalControls, bt);
-    }
+  const handleSendDocument = (ctrl: PrenatalControlTrack) => {
+    setSendingDocId(ctrl.id);
+    // Simulating email sending
+    setTimeout(() => {
+      handleControlToggle(ctrl.id, 'hasDocument');
+      setSendingDocId(null);
+      setShowToast(`Documento de "${ctrl.title}" enviado a ${profile?.email}`);
+      setTimeout(() => setShowToast(null), 4000);
+    }, 1500);
   };
-
-  const abnormalExams = examSchedule.flatMap(cat => 
-    cat.exams.filter(ex => ex.status === 'abnormal').map(ex => ({ ...ex, catId: cat.id }))
-  );
 
   if (!profile) return (
     <div className="flex items-center justify-center h-screen text-slate-400 font-bold uppercase tracking-widest text-xs">
@@ -212,216 +161,323 @@ const VirtualCard: React.FC = () => {
   );
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-12 space-y-12 animate-in fade-in duration-700 pb-24">
-      <header className="text-center space-y-4">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-ceres-mint text-ceres-primary rounded-full text-[10px] font-bold uppercase tracking-[0.2em]">
-          <Fingerprint className="w-4 h-4" />
-          Protocolo Médico Ceres Digital
+    <div className="max-w-7xl mx-auto px-4 py-12 space-y-12 animate-in fade-in duration-700 pb-24 relative">
+      {/* Toast Notification */}
+      {showToast && (
+        <div className="fixed bottom-10 right-10 z-[110] bg-ceres-dark text-white px-8 py-5 rounded-3xl shadow-2xl flex items-center gap-4 animate-in slide-in-from-bottom-5 duration-300">
+          <Mail className="w-6 h-6 text-ceres-secondary" />
+          <div className="flex flex-col">
+            <span className="text-xs font-bold uppercase tracking-widest">Correo Enviado</span>
+            <span className="text-[11px] font-medium opacity-90">{showToast}</span>
+          </div>
+          <button onClick={() => setShowToast(null)} className="ml-4 p-1 hover:bg-white/10 rounded-full"><X className="w-4 h-4" /></button>
         </div>
-        <h1 className="text-4xl md:text-5xl font-serif font-bold text-slate-900 tracking-tight">Carnet Prenatal Virtual</h1>
-        <p className="text-slate-500 font-medium">Control unificado de salud, nutrición y laboratorios.</p>
-      </header>
+      )}
 
-      <div className="bg-white rounded-[40px] border border-ceres-mint shadow-2xl overflow-hidden relative">
-        <div className="bg-ceres-dark p-10 text-white flex flex-col md:flex-row justify-between items-center gap-8 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-ceres-primary rounded-full -mr-32 -mt-32 opacity-20 blur-3xl"></div>
-          <div className="flex items-center gap-6 relative z-10">
-            <div className="w-20 h-20 bg-white/10 backdrop-blur-md rounded-[28px] flex items-center justify-center border border-white/20">
-              <ShieldCheck className="w-10 h-10 text-white" />
-            </div>
-            <div>
-              <h2 className="text-3xl font-serif font-bold">{profile.name} {profile.lastName}</h2>
-              <div className="flex gap-4 mt-1">
-                <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-ceres-secondary">ID: {profile.idNumber}</p>
-                <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-ceres-primary">Grupo: {profile.bloodType || 'N/A'}</p>
-              </div>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-8 relative z-10 text-right md:text-left">
-            <div>
-              <p className="text-[8px] font-bold text-ceres-secondary uppercase tracking-widest">Semanas</p>
-              <p className="text-xl font-bold">{profile.gestationWeeks}</p>
-            </div>
-            <div>
-              <p className="text-[8px] font-bold text-ceres-secondary uppercase tracking-widest">Riesgo</p>
-              <p className="text-xl font-bold text-ceres-primary">{localStorage.getItem('ceres_risk') || 'Bajo'}</p>
-            </div>
-          </div>
-        </div>
+      {/* Tab Selector */}
+      <div className="flex bg-white p-2 rounded-full border border-ceres-mint shadow-lg w-fit mx-auto mb-10 overflow-hidden">
+         <button 
+           onClick={() => setActiveTab('labs')} 
+           className={`px-10 py-4 rounded-full font-bold text-[11px] uppercase tracking-widest transition-all ${activeTab === 'labs' ? 'bg-ceres-primary text-white shadow-md' : 'text-slate-400 hover:text-ceres-primary hover:bg-ceres-light'}`}
+         >
+           Salud y Laboratorios
+         </button>
+         <button 
+           onClick={() => setActiveTab('activity')} 
+           className={`px-10 py-4 rounded-full font-bold text-[11px] uppercase tracking-widest transition-all ${activeTab === 'activity' ? 'bg-[#0097A7] text-white shadow-md' : 'text-slate-400 hover:text-[#0097A7] hover:bg-cyan-50'}`}
+         >
+           Actividad Física
+         </button>
+      </div>
 
-        <div className="p-8 md:p-12 border-b border-ceres-mint bg-ceres-light/30">
-          <div className="flex items-center gap-4 mb-8">
-            <ClipboardList className="w-8 h-8 text-ceres-primary" />
-            <div>
-              <h3 className="text-2xl font-serif font-bold text-slate-800">Controles Prenatales</h3>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Seguimiento C - N - E</p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {prenatalControls.map((ctrl) => (
-              <div key={ctrl.id} className="bg-white p-5 rounded-[24px] border border-slate-100 flex items-center justify-between shadow-sm group hover:border-ceres-primary transition-all">
-                <span className="text-xs font-bold text-slate-700 pr-4 leading-tight">{ctrl.title}</span>
-                <div className="flex items-center gap-2 shrink-0">
-                  <button 
-                    onClick={() => handleControlToggle(ctrl.id, 'hasControl')}
-                    className={`w-9 h-9 rounded-xl flex flex-col items-center justify-center border-2 transition-all ${ctrl.hasControl ? 'bg-ceres-primary border-ceres-primary text-white shadow-md' : 'bg-slate-50 border-slate-100 text-slate-300'}`}
-                    title="Control Médico (C)"
-                  >
-                    <span className="text-[9px] font-black">C</span>
-                    {ctrl.hasControl && <Check className="w-2 h-2" />}
-                  </button>
-                  <button 
-                    onClick={() => handleControlToggle(ctrl.id, 'hasNutrition')}
-                    className={`w-9 h-9 rounded-xl flex flex-col items-center justify-center border-2 transition-all ${ctrl.hasNutrition ? 'bg-orange-400 border-orange-400 text-white shadow-md' : 'bg-slate-50 border-slate-100 text-slate-300'}`}
-                    title="Nutrición (N)"
-                  >
-                    <span className="text-[9px] font-black">N</span>
-                    {ctrl.hasNutrition && <Check className="w-2 h-2" />}
-                  </button>
-                  <button 
-                    onClick={() => handleControlToggle(ctrl.id, 'hasExercise')}
-                    className={`w-9 h-9 rounded-xl flex flex-col items-center justify-center border-2 transition-all ${ctrl.hasExercise ? 'bg-blue-400 border-blue-400 text-white shadow-md' : 'bg-slate-50 border-slate-100 text-slate-300'}`}
-                    title="Ejercicio (E)"
-                  >
-                    <span className="text-[9px] font-black">E</span>
-                    {ctrl.hasExercise && <Check className="w-2 h-2" />}
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="p-8 md:p-12 space-y-10">
-          <div className="flex items-center justify-between">
-            <h3 className="text-2xl font-serif font-bold text-slate-800 flex items-center gap-3">
-              <Activity className="w-7 h-7 text-ceres-primary" />
-              Checklist de Laboratorio
-            </h3>
-            <div className="flex items-center gap-6 text-[10px] font-bold uppercase tracking-widest text-slate-400">
-              <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-emerald-500"></div> N: Normal</span>
-              <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-rose-500"></div> Anor: Anormal</span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 gap-6">
-            {examSchedule.map((category) => (
-              <div key={category.id} className="bg-slate-50 rounded-[32px] border border-slate-100 overflow-hidden">
-                <button 
-                  onClick={() => setExpandedCatId(expandedCatId === category.id ? null : category.id)}
-                  className="w-full p-6 flex items-center justify-between hover:bg-slate-100 transition-colors"
-                >
-                  <div className="text-left">
-                    <span className="text-lg font-bold text-slate-800">{category.title}</span>
-                    {category.subtitle && <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{category.subtitle}</p>}
-                  </div>
-                  {expandedCatId === category.id ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-                </button>
-
-                {expandedCatId === category.id && (
-                  <div className="p-6 pt-0 divide-y divide-white/60">
-                    {category.exams.map((exam) => (
-                      <div key={exam.id} className="py-5 flex flex-col gap-4">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm font-bold text-slate-700">{exam.name}</span>
-                          
-                          <div className="flex items-center gap-4">
-                            <div className="flex bg-white rounded-2xl p-1 shadow-sm border border-slate-100">
-                              <button 
-                                onClick={() => handleStatusToggle(category.id, exam.id, 'normal')}
-                                className={`px-4 py-2 rounded-xl text-[10px] font-black transition-all flex items-center gap-2 ${exam.status === 'normal' ? 'bg-emerald-500 text-white shadow-md' : 'text-slate-300 hover:text-emerald-500'}`}
-                              >
-                                {exam.status === 'normal' && <Check className="w-3 h-3" />} N
-                              </button>
-                              <button 
-                                onClick={() => handleStatusToggle(category.id, exam.id, 'abnormal')}
-                                className={`px-4 py-2 rounded-xl text-[10px] font-black transition-all flex items-center gap-2 ${exam.status === 'abnormal' ? 'bg-rose-500 text-white shadow-md' : 'text-slate-300 hover:text-rose-500'}`}
-                              >
-                                {exam.status === 'abnormal' && <Check className="w-3 h-3" />} ANOR
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-
-                        {exam.id === 'e1' && (
-                          <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
-                            {BLOOD_TYPES.map(bt => (
-                              <button 
-                                key={bt} 
-                                onClick={() => handleBloodTypeChange(bt)}
-                                className={`py-2 rounded-xl text-[10px] font-bold border transition-all ${profile.bloodType === bt ? 'bg-ceres-primary border-ceres-primary text-white shadow-lg' : 'bg-white border-slate-100 text-slate-400 hover:bg-ceres-mint'}`}
-                              >
-                                {bt}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-
-                        {(exam.status === 'abnormal' || exam.resultValue) && exam.id !== 'e1' && (
-                          <div className="relative animate-in slide-in-from-top-2">
-                            <Edit3 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-ceres-primary" />
-                            <input 
-                              type="text" 
-                              placeholder="Ingresar valor o hallazgo médico..." 
-                              className="w-full pl-12 pr-6 py-3 bg-white border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-ceres-mint text-sm font-medium"
-                              value={exam.resultValue || ''}
-                              onChange={(e) => handleValueChange(category.id, exam.id, e.target.value)}
-                            />
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {abnormalExams.length > 0 && (
-          <div className="p-8 md:p-12 bg-rose-50/50 border-t border-rose-100">
-            <div className="flex items-center gap-4 mb-8">
-              <div className="w-12 h-12 bg-rose-500 rounded-2xl flex items-center justify-center shadow-lg shadow-rose-200">
-                <AlertCircle className="w-7 h-7 text-white" />
+      {activeTab === 'labs' ? (
+        <div className="bg-white rounded-[40px] border border-ceres-mint shadow-2xl overflow-hidden">
+          {/* Clinical Header */}
+          <div className="bg-ceres-dark p-10 text-white flex flex-col md:flex-row justify-between items-center gap-8 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-ceres-primary rounded-full -mr-32 -mt-32 opacity-20 blur-3xl"></div>
+            <div className="flex items-center gap-6 relative z-10">
+              <div className="w-20 h-20 bg-white/10 backdrop-blur-md rounded-[28px] flex items-center justify-center border border-white/20">
+                <ShieldCheck className="w-10 h-10 text-white" />
               </div>
               <div>
-                <h3 className="text-2xl font-serif font-bold text-rose-900">Seguimiento Hallazgos Anormales</h3>
-                <p className="text-[10px] font-bold text-rose-500 uppercase tracking-widest">Atención prioritaria Ceres</p>
+                <h2 className="text-3xl font-serif font-bold">{profile.name} {profile.lastName}</h2>
+                <div className="flex gap-4 mt-1">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-ceres-secondary">ID: {profile.idNumber}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-ceres-primary">Grupo: {profile.bloodType || 'N/A'}</p>
+                </div>
               </div>
             </div>
+            <div className="grid grid-cols-2 gap-8 relative z-10 text-right md:text-left">
+              <div><p className="text-[8px] font-bold text-ceres-secondary uppercase tracking-widest">Semanas</p><p className="text-xl font-bold">{profile.gestationWeeks}</p></div>
+              <div><p className="text-[8px] font-bold text-ceres-secondary uppercase tracking-widest">Riesgo</p><p className="text-xl font-bold text-ceres-primary">{localStorage.getItem('ceres_risk') || 'Bajo'}</p></div>
+            </div>
+          </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {abnormalExams.map((ex) => (
-                <div key={ex.id} className="bg-white p-6 rounded-[32px] border border-rose-100 shadow-sm space-y-3">
-                  <div className="flex justify-between items-start">
-                    <p className="text-sm font-bold text-slate-800">{ex.name}</p>
-                    <span className="px-3 py-1 bg-rose-100 text-rose-500 text-[9px] font-black rounded-full uppercase">Alerta</span>
+          <div className="p-8 md:p-12 border-b border-ceres-mint bg-ceres-light/30">
+            <h3 className="text-2xl font-serif font-bold text-slate-800 flex items-center gap-4 mb-8"><ClipboardList className="w-8 h-8 text-ceres-primary" />Controles Prenatales (C-N-E-D)</h3>
+            <div className="grid grid-cols-1 gap-6">
+              {prenatalControls.map((ctrl) => (
+                <div key={ctrl.id} className="bg-white p-6 rounded-[32px] border border-slate-100 flex flex-col md:flex-row items-start md:items-center justify-between shadow-sm group hover:border-ceres-primary transition-all gap-6">
+                  <div className="space-y-1">
+                    <span className="text-sm font-bold text-slate-800 pr-4 leading-tight block">{ctrl.title}</span>
+                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Registro de Visita Médica</span>
                   </div>
-                  <div className="p-4 bg-slate-50 rounded-2xl">
-                    <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mb-1">Valor/Hallazgo:</p>
-                    <p className="text-sm font-medium text-rose-900">{ex.resultValue || 'Pendiente de registrar valor...'}</p>
+                  <div className="flex items-center gap-3 w-full md:w-auto justify-end">
+                    <div className="flex items-center gap-2 pr-4 border-r border-slate-100">
+                      <button onClick={() => handleControlToggle(ctrl.id, 'hasControl')} className={`w-10 h-10 rounded-xl flex flex-col items-center justify-center border-2 transition-all group/btn ${ctrl.hasControl ? 'bg-ceres-primary border-ceres-primary text-white shadow-md' : 'bg-slate-50 border-slate-100 text-slate-300'}`}>
+                        <span className="text-[10px] font-black">C</span>
+                        <span className="text-[6px] font-bold uppercase hidden group-hover/btn:block">Ctrl</span>
+                      </button>
+                      <button onClick={() => handleControlToggle(ctrl.id, 'hasNutrition')} className={`w-10 h-10 rounded-xl flex flex-col items-center justify-center border-2 transition-all group/btn ${ctrl.hasNutrition ? 'bg-orange-400 border-orange-400 text-white shadow-md' : 'bg-slate-50 border-slate-100 text-slate-300'}`}>
+                        <span className="text-[10px] font-black">N</span>
+                        <span className="text-[6px] font-bold uppercase hidden group-hover/btn:block">Nutr</span>
+                      </button>
+                      <button onClick={() => handleControlToggle(ctrl.id, 'hasExercise')} className={`w-10 h-10 rounded-xl flex flex-col items-center justify-center border-2 transition-all group/btn ${ctrl.hasExercise ? 'bg-blue-400 border-blue-400 text-white shadow-md' : 'bg-slate-50 border-slate-100 text-slate-300'}`}>
+                        <span className="text-[10px] font-black">E</span>
+                        <span className="text-[6px] font-bold uppercase hidden group-hover/btn:block">Ejerc</span>
+                      </button>
+                    </div>
+                    
+                    <button 
+                      onClick={() => handleSendDocument(ctrl)} 
+                      disabled={sendingDocId === ctrl.id}
+                      className={`h-10 px-4 rounded-xl flex items-center justify-center gap-2 border-2 transition-all group/doc ${ctrl.hasDocument ? 'bg-ceres-secondary border-ceres-secondary text-white shadow-md' : 'bg-slate-50 border-slate-100 text-slate-400 hover:border-ceres-secondary hover:text-ceres-secondary'}`}
+                    >
+                      {sendingDocId === ctrl.id ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <FileText className="w-4 h-4" />
+                      )}
+                      <span className="text-[10px] font-bold uppercase tracking-widest">Documento</span>
+                    </button>
                   </div>
                 </div>
               ))}
             </div>
           </div>
-        )}
 
-        <div className="p-10 bg-slate-50 border-t border-ceres-mint text-center space-y-6">
-          <p className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em] max-w-md mx-auto leading-relaxed">
-            Toda información registrada aquí es procesada para tu seguimiento gestacional en Ceres.
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-4">
-            <button className="bg-ceres-primary hover:bg-ceres-dark text-white px-10 py-5 rounded-3xl font-bold tracking-widest text-[10px] transition-all shadow-xl shadow-ceres-primary/20">
-              DESCARGAR PDF PARA EL DOCTOR
-            </button>
-            <button className="bg-white border-2 border-ceres-primary text-ceres-primary px-10 py-5 rounded-3xl font-bold tracking-widest text-[10px] transition-all hover:bg-ceres-mint">
-              COMPARTIR CON MI OBSTETRA
-            </button>
+          <div className="p-8 md:p-12 space-y-10">
+            <div className="flex items-center justify-between">
+              <h3 className="text-2xl font-serif font-bold text-slate-800 flex items-center gap-3"><Activity className="w-7 h-7 text-ceres-primary" />Checklist de Laboratorio</h3>
+            </div>
+            <div className="grid grid-cols-1 gap-6">
+              {examSchedule.map((category) => (
+                <div key={category.id} className="bg-slate-50 rounded-[32px] border border-slate-100 overflow-hidden">
+                  <button onClick={() => setExpandedCatId(expandedCatId === category.id ? null : category.id)} className="w-full p-6 flex items-center justify-between hover:bg-slate-100 transition-colors">
+                    <div className="text-left"><span className="text-lg font-bold text-slate-800">{category.title}</span></div>
+                    {expandedCatId === category.id ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                  </button>
+                  {expandedCatId === category.id && (
+                    <div className="p-6 pt-0 divide-y divide-white/60">
+                      {category.exams.map((exam) => (
+                        <div key={exam.id} className="py-5 flex flex-col gap-4">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-bold text-slate-700">{exam.name}</span>
+                            <div className="flex bg-white rounded-2xl p-1 shadow-sm border border-slate-100">
+                              <button onClick={() => handleStatusToggle(category.id, exam.id, 'normal')} className={`px-4 py-2 rounded-xl text-[10px] font-black transition-all ${exam.status === 'normal' ? 'bg-emerald-500 text-white' : 'text-slate-300'}`}>N</button>
+                              <button onClick={() => handleStatusToggle(category.id, exam.id, 'abnormal')} className={`px-4 py-2 rounded-xl text-[10px] font-black transition-all ${exam.status === 'abnormal' ? 'bg-rose-500 text-white' : 'text-slate-300'}`}>ANOR</button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+      ) : (
+        <div className="bg-white rounded-[40px] border border-cyan-100 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-500">
+           {/* PDF Header Style: VALORACIÓN ESTADO FÍSICO MATERNO */}
+           <div className="bg-[#00BCD4] p-12 text-white flex justify-between items-center border-b-[8px] border-[#0097A7]">
+              <div className="space-y-2">
+                <p className="text-xs font-bold tracking-[0.4em] uppercase opacity-90">Protocolo Ceres Mujer</p>
+                <h3 className="text-4xl md:text-5xl font-serif font-black tracking-tight leading-none uppercase">
+                  VALORACIÓN <br/>
+                  <span className="text-[#E0F7FA]">ESTADO FÍSICO</span> <br/>
+                  MATERNO
+                </h3>
+              </div>
+              <div className="hidden md:block">
+                 <div className="w-40 h-40 bg-white/20 backdrop-blur-lg rounded-full flex items-center justify-center border-4 border-white/40">
+                    <Activity className="w-20 h-20 text-white" />
+                 </div>
+              </div>
+           </div>
+
+           <div className="p-8 md:p-14 grid grid-cols-1 lg:grid-cols-3 gap-10">
+              {/* Panel 1: Prescripción Médica (Matches PDF structure) */}
+              <div className="space-y-10 lg:border-r lg:border-cyan-50 lg:pr-10">
+                 <div className="space-y-6">
+                    <div className="relative">
+                      <div className="bg-[#0097A7] text-white py-3 px-8 rounded-tr-3xl rounded-bl-3xl w-fit font-bold uppercase text-[11px] tracking-widest relative z-10 shadow-md">
+                        Prescripción Médica
+                      </div>
+                      <div className="bg-cyan-50 h-1 w-full absolute top-1/2 -z-0"></div>
+                    </div>
+                    
+                    <div className="bg-white p-6 rounded-3xl border border-cyan-100 shadow-sm space-y-4">
+                       <div className="flex justify-between border-b border-cyan-50 pb-2">
+                         <span className="text-[10px] font-bold text-slate-400 uppercase">Nombre:</span>
+                         <span className="text-xs font-bold text-[#006064]">{profile.name}</span>
+                       </div>
+                       <div className="grid grid-cols-2 gap-4">
+                         <div className="border-b border-cyan-50 pb-2">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase block">Trimestre:</span>
+                            <span className="text-xs font-bold text-[#006064]">2do</span>
+                         </div>
+                         <div className="border-b border-cyan-50 pb-2">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase block">Latidos:</span>
+                            <span className="text-xs font-bold text-[#006064]">140 lpm</span>
+                         </div>
+                       </div>
+                       <div className="flex justify-around pt-2">
+                          {['Deportista', 'Activa', 'Sedentaria'].map(type => (
+                            <div key={type} className="flex flex-col items-center gap-1">
+                               <div className={`w-5 h-5 rounded-md border-2 ${type === 'Activa' ? 'bg-[#0097A7] border-[#0097A7]' : 'border-cyan-200'} flex items-center justify-center`}>
+                                  {type === 'Activa' && <Check className="w-4 h-4 text-white" />}
+                               </div>
+                               <span className="text-[9px] font-bold text-slate-400 uppercase">{type}</span>
+                            </div>
+                          ))}
+                       </div>
+                    </div>
+                 </div>
+
+                 <div className="space-y-6">
+                    <div className="relative">
+                      <div className="bg-[#0097A7] text-white py-3 px-8 rounded-tr-3xl rounded-bl-3xl w-fit font-bold uppercase text-[11px] tracking-widest relative z-10 shadow-md">
+                        Ejercicios Aeróbicos
+                      </div>
+                      <div className="bg-cyan-50 h-1 w-full absolute top-1/2 -z-0"></div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                       {['Caminar', 'Nadar', 'Yoga', 'Pilates', 'Zumba', 'Nadar'].map(ex => (
+                         <div key={ex} className="flex items-center gap-2 p-3 bg-cyan-50/50 rounded-xl border border-cyan-100">
+                            <div className="w-3 h-3 rounded-full bg-[#0097A7]"></div>
+                            <span className="text-[10px] font-bold text-[#006064] uppercase">{ex}</span>
+                         </div>
+                       ))}
+                    </div>
+                    <div className="p-4 bg-[#E0F7FA] rounded-2xl text-[10px] font-bold text-[#006064] text-center uppercase tracking-widest">
+                       Frecuencia: 2 a 3 veces / semana
+                    </div>
+                 </div>
+              </div>
+
+              {/* Panel 2: Recomendaciones & Objetivos */}
+              <div className="space-y-10 lg:border-r lg:border-cyan-50 lg:pr-10">
+                 <div className="space-y-6">
+                    <div className="relative">
+                      <div className="bg-[#0097A7] text-white py-3 px-8 rounded-tr-3xl rounded-bl-3xl w-fit font-bold uppercase text-[11px] tracking-widest relative z-10 shadow-md">
+                        Recomendaciones
+                      </div>
+                      <div className="bg-cyan-50 h-1 w-full absolute top-1/2 -z-0"></div>
+                    </div>
+                    <div className="space-y-3">
+                       {[
+                         'Consulte a su médico antes de aumentar su nivel de actividad.',
+                         'Hacer ejercicio con regularidad pero no sobre-ejercer.',
+                         'Hacer ejercicio con una amiga embarazada o unirse a programa prenatal.',
+                         'Seguir los principios del FITT modificados para embarazadas.'
+                       ].map((rec, i) => (
+                         <div key={i} className="flex gap-3 p-4 bg-white border border-cyan-50 rounded-2xl shadow-sm italic text-xs text-slate-600">
+                            <Info className="w-4 h-4 text-[#00BCD4] shrink-0" />
+                            <p>{rec}</p>
+                         </div>
+                       ))}
+                    </div>
+                 </div>
+
+                 <div className="space-y-6">
+                    <div className="relative">
+                      <div className="bg-[#0097A7] text-white py-3 px-8 rounded-tr-3xl rounded-bl-3xl w-fit font-bold uppercase text-[11px] tracking-widest relative z-10 shadow-md">
+                        Objetivos
+                      </div>
+                      <div className="bg-cyan-50 h-1 w-full absolute top-1/2 -z-0"></div>
+                    </div>
+                    <div className="space-y-2">
+                       {['Aumentar masa muscular', 'Reducir el dolor lumbar', 'Mejorar el estado del ánimo', 'Ayudar a la recuperación pos-parto'].map(obj => (
+                         <div key={obj} className="flex items-center gap-3 px-4 py-3 bg-[#E0F7FA] rounded-2xl">
+                            <div className="w-5 h-5 rounded-full border-2 border-[#0097A7] flex items-center justify-center bg-white"><Check className="w-3 h-3 text-[#0097A7]" /></div>
+                            <span className="text-[10px] font-bold text-[#00838F] uppercase">{obj}</span>
+                         </div>
+                       ))}
+                    </div>
+                 </div>
+              </div>
+
+              {/* Panel 3: Alimentación & Seguridad */}
+              <div className="space-y-10">
+                 <div className="space-y-6">
+                    <div className="relative">
+                      <div className="bg-[#0097A7] text-white py-3 px-8 rounded-tr-3xl rounded-bl-3xl w-fit font-bold uppercase text-[11px] tracking-widest relative z-10 shadow-md">
+                        Alimentación & Deporte
+                      </div>
+                      <div className="bg-cyan-50 h-1 w-full absolute top-1/2 -z-0"></div>
+                    </div>
+                    <div className="bg-white p-6 rounded-[32px] border border-cyan-100 space-y-5">
+                       <div className="flex items-start gap-4">
+                          <Droplets className="w-5 h-5 text-cyan-500 shrink-0" />
+                          <p className="text-[10px] font-bold text-slate-500 leading-relaxed uppercase">Beber 6-8 vasos de líquido, incluyendo agua, cada día.</p>
+                       </div>
+                       <div className="flex items-start gap-4">
+                          <Zap className="w-5 h-5 text-amber-500 shrink-0" />
+                          <p className="text-[10px] font-bold text-slate-500 leading-relaxed uppercase">La necesidad de calorías es más alta (300 más por día).</p>
+                       </div>
+                       <div className="flex items-start gap-4">
+                          <Utensils className="w-5 h-5 text-emerald-500 shrink-0" />
+                          <p className="text-[10px] font-bold text-slate-500 leading-relaxed uppercase">Hidratar antes, durante y después del ejercicio.</p>
+                       </div>
+                    </div>
+                 </div>
+
+                 <div className="space-y-6">
+                    <div className="relative">
+                      <div className="bg-[#D81B60] text-white py-3 px-8 rounded-tr-3xl rounded-bl-3xl w-fit font-bold uppercase text-[11px] tracking-widest relative z-10 shadow-md">
+                        Razones para detenerse
+                      </div>
+                      <div className="bg-rose-50 h-1 w-full absolute top-1/2 -z-0"></div>
+                    </div>
+                    <div className="bg-rose-50 border border-rose-100 p-6 rounded-[32px] space-y-4">
+                       {[
+                         'Falta de aliento excesiva',
+                         'Sangrado vaginal',
+                         'Mareos o desmayos',
+                         'Dolor de pecho',
+                         'Contracciones uterinas dolorosas',
+                         'Fuga de líquido de la vagina'
+                       ].map(reason => (
+                         <div key={reason} className="flex items-center gap-3">
+                            <X className="w-4 h-4 text-rose-500 shrink-0" />
+                            <span className="text-[10px] font-bold text-rose-800 uppercase tracking-tight">{reason}</span>
+                         </div>
+                       ))}
+                    </div>
+                 </div>
+              </div>
+           </div>
+           
+           {/* Footer Promo (Matches PDF bottom) */}
+           <div className="p-10 bg-cyan-50 text-center space-y-4 border-t border-cyan-100">
+              <p className="text-[11px] font-serif font-bold text-[#006064] italic">
+                "Buenos hábitos en nutrición y ejercicios son tu mejor beneficio."
+              </p>
+              <div className="flex flex-wrap justify-center gap-4">
+                <button className="bg-[#0097A7] text-white px-10 py-4 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-lg hover:bg-[#006064] transition-all">
+                  Imprimir mi Carnet PDF
+                </button>
+                <button className="bg-white border-2 border-[#0097A7] text-[#0097A7] px-10 py-4 rounded-2xl font-bold text-[10px] uppercase tracking-widest hover:bg-cyan-50 transition-all">
+                  Ver Folletos de Ejercicios
+                </button>
+              </div>
+              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest pt-4">
+                © Ceres Mujer - Medellín, Cra 45 N° 6-95, Barrio Patio Bonito
+              </p>
+           </div>
+        </div>
+      )}
     </div>
   );
 };
