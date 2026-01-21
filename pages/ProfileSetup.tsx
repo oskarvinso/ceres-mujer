@@ -9,7 +9,7 @@ interface ProfileSetupProps {
 }
 
 const COLOMBIA_DATA: Record<string, string[]> = {
-  "Antioquia": ["Medellín", "Envigado", "Itagüí", "Rionegro", "Bello", "Apartadó"],
+  "Antioquia": ["Medellín", "Envigado", "Itagüí", "Rionegro", "Bello", "Apartadó", "San Roque", "Ituango"],
   "Atlántico": ["Barranquilla", "Soledad", "Puerto Colombia", "Sabanalarga"],
   "Bogotá D.C.": ["Bogotá D.C."],
   "Bolívar": ["Cartagena", "Magangué", "Turbaco"],
@@ -19,6 +19,11 @@ const COLOMBIA_DATA: Record<string, string[]> = {
   "Risaralda": ["Pereira", "Dosquebradas", "Santa Rosa de Cabal"],
   "Santander": ["Bucaramanga", "Floridablanca", "Girón", "Piedecuesta"],
   "Valle del Cauca": ["Cali", "Palmira", "Tuluá", "Buenaventura", "Buga"]
+};
+
+const VILLAGE_DATA: Record<string, string[]> = {
+  "San Roque": ["Cabecera Municipal", "Cristales", "Providencia", "San José", "La Bodega", "El Porvenir", "Playa Rica", "Santa Isabel", "Guacharacas"],
+  "Ituango": ["Cabecera Municipal", "Santa Rita", "La Granja", "El Aro", "El Cedral", "Santa Ana", "Pascuitá", "Badillo", "La Camelia", "San Jorge"]
 };
 
 const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
@@ -40,6 +45,7 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
     phone: '',
     department: '',
     municipality: '',
+    village: '',
     address: '',
     emergencyContact: '',
     emergencyPhone: '',
@@ -51,9 +57,47 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
     weightGoal: { min: 11.5, max: 16, category: 'Peso Normal' },
     riskFactors: {
       sociodemographic: { age15_19: false, ageOver36: false, ageUnder15: false, lowSocioeconomic: false, workRisk: false, smoking: false, alcoholism: false, psychoactiveActive: false, multipara: false },
-      medical: { noRiskFactors: false, hypertensionChronic: false, hypertensionGestational: false, diabetesPreexisting: false, diabetesGestational: false, obesityIMC30_34: false, obesityIMC35_40: false, lowWeightIMC20: false, renalPathology: false, cardiacPathology: false, thyroidPathology: false, asthmaControlled: false, epilepsy: false, hiv_syphilis: false, cancerRemission: false, mentalHealthHistory: false },
+      medical: { 
+        noRiskFactors: false, 
+        hypertensionChronic: false, 
+        hypertensionGestational: false, 
+        diabetesPreexisting: false, 
+        diabetesGestational: false, 
+        obesityIMC30_34: false, 
+        obesityIMC35_40: false, 
+        lowWeightIMC20: false, 
+        renalPathology: false, 
+        cardiacPathology: false, 
+        thyroidPathology: false, 
+        asthmaControlled: false, 
+        epilepsy: false, 
+        hiv_syphilis: false, 
+        cancerRemission: false, 
+        mentalHealthHistory: false,
+        herpesHistory: false,
+        drugAllergies: false,
+        infertilityHistory: false,
+        cytologyAlterations: false,
+        liverPathology: false,
+        anemia: false,
+        myomas: false,
+        recurrentUrinaryInfection: false
+      },
       reproductive: { previousAbortion2_plus: false, previousPretermBirth: false, previousPreeclampsia: false, previousCsection1_2: false, incompetenceCervical: false, ectopicHistory: false, uterineSurgery: false },
-      currentPregnancy: { noObstetricRiskFactors: false, multiplePregnancy: false, threatenedAbortion: false, threatenedPreterm: false, rciu: false, poly_oligohydramnios: false, hemorrhage: false, perinatalInfection: false }
+      currentPregnancy: { 
+        noObstetricRiskFactors: false, 
+        multiplePregnancy: false, 
+        threatenedAbortion: false, 
+        threatenedPreterm: false, 
+        rciu: false, 
+        poly_oligohydramnios: false, 
+        hemorrhage: false, 
+        perinatalInfection: false,
+        placentaPrevia: false,
+        amnioticFluidAlteration: false,
+        urinaryInfection: false,
+        congenitalDefect: false
+      }
     }
   });
 
@@ -104,6 +148,14 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
       rf.medical.cancerRemission ||
       rf.medical.hiv_syphilis ||
       rf.medical.mentalHealthHistory ||
+      rf.medical.herpesHistory ||
+      rf.medical.liverPathology ||
+      rf.medical.thyroidPathology ||
+      rf.medical.infertilityHistory ||
+      rf.medical.cytologyAlterations ||
+      rf.medical.anemia ||
+      rf.medical.myomas ||
+      rf.medical.recurrentUrinaryInfection ||
       rf.reproductive.previousAbortion2_plus ||
       rf.reproductive.previousPretermBirth ||
       rf.reproductive.previousPreeclampsia ||
@@ -115,7 +167,11 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
       rf.currentPregnancy.threatenedPreterm ||
       rf.currentPregnancy.rciu ||
       rf.currentPregnancy.poly_oligohydramnios ||
-      rf.currentPregnancy.hemorrhage;
+      rf.currentPregnancy.hemorrhage ||
+      rf.currentPregnancy.placentaPrevia ||
+      rf.currentPregnancy.amnioticFluidAlteration ||
+      rf.currentPregnancy.urinaryInfection ||
+      rf.currentPregnancy.congenitalDefect;
 
     return isHighRisk ? 'Alto' : 'Bajo';
   };
@@ -188,6 +244,9 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
 
   const isStep1Invalid = !formData.name || !formData.lastName || !formData.idNumber || !formData.phone || !formData.email || !formData.address || !formData.department || !formData.municipality;
 
+  // Village logic
+  const villagesForMunicipality = formData.municipality ? VILLAGE_DATA[formData.municipality] : null;
+
   return (
     <div className="min-h-screen bg-ceres-light flex items-center justify-center p-4 md:p-8">
       <div className="max-w-6xl w-full bg-white rounded-[40px] shadow-2xl border border-white overflow-hidden flex flex-col md:flex-row h-[90vh] md:h-auto">
@@ -247,7 +306,7 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
 
           {step === 1 && (
             <div className="space-y-8 animate-in fade-in slide-in-from-right-10">
-              <h3 className="text-3xl font-serif font-bold text-slate-800">Identificación y Contacto</h3>
+              <h3 className="text-3xl font-serif font-bold text-slate-800">Identificación y Ubicación</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-1">
                   <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Nombres Completos</label>
@@ -272,24 +331,39 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
                   <input type="number" className="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none" value={formData.age} onChange={e => setFormData({...formData, age: parseInt(e.target.value)})} />
                 </div>
                 <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Departamento</label>
+                  <select className="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none" value={formData.department} onChange={e => setFormData({...formData, department: e.target.value, municipality: '', village: ''})}><option value="">Seleccione...</option>{Object.keys(COLOMBIA_DATA).map(d => <option key={d} value={d}>{d}</option>)}</select>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Municipio</label>
+                  <select className="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none" value={formData.municipality} onChange={e => setFormData({...formData, municipality: e.target.value, village: ''})} disabled={!formData.department}><option value="">Seleccione...</option>{formData.department && COLOMBIA_DATA[formData.department].map(m => <option key={m} value={m}>{m}</option>)}</select>
+                </div>
+
+                {/* Village / Vereda Field */}
+                <div className="col-span-1 md:col-span-2 space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Vereda / Corregimiento / Barrio</label>
+                  {villagesForMunicipality ? (
+                    <select className="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none border border-transparent focus:border-ceres-primary" value={formData.village} onChange={e => setFormData({...formData, village: e.target.value})}>
+                      <option value="">Seleccione zona...</option>
+                      {villagesForMunicipality.map(v => <option key={v} value={v}>{v}</option>)}
+                      <option value="OTRA">Otra vereda...</option>
+                    </select>
+                  ) : (
+                    <input type="text" className="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none border border-transparent focus:border-ceres-primary" value={formData.village} onChange={e => setFormData({...formData, village: e.target.value})} placeholder="Ingrese vereda o barrio" />
+                  )}
+                </div>
+
+                <div className="col-span-1 md:col-span-2 space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Dirección / Referencia de Ubicación</label>
+                  <input type="text" className="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none border border-transparent focus:border-ceres-primary" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} placeholder="Ej: Calle 123 #45-67 o nombre de finca" />
+                </div>
+                <div className="space-y-1">
                   <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Correo</label>
                   <input type="email" className="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
                 </div>
                 <div className="space-y-1">
                   <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Teléfono</label>
                   <input type="tel" className="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
-                </div>
-                <div className="col-span-1 md:col-span-2 space-y-1">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Dirección de Residencia</label>
-                  <input type="text" className="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none border border-transparent focus:border-ceres-primary" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} placeholder="Ej: Calle 123 #45-67" />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Departamento</label>
-                  <select className="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none" value={formData.department} onChange={e => setFormData({...formData, department: e.target.value, municipality: ''})}><option value="">Seleccione...</option>{Object.keys(COLOMBIA_DATA).map(d => <option key={d} value={d}>{d}</option>)}</select>
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Municipio</label>
-                  <select className="w-full px-5 py-4 bg-slate-50 rounded-2xl outline-none" value={formData.municipality} onChange={e => setFormData({...formData, municipality: e.target.value})} disabled={!formData.department}><option value="">Seleccione...</option>{formData.department && COLOMBIA_DATA[formData.department].map(m => <option key={m} value={m}>{m}</option>)}</select>
                 </div>
               </div>
             </div>
@@ -304,11 +378,27 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
                   <div><span className="font-bold text-slate-800 block">Sin factores de riesgo médico</span></div>
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[{ c: 'medical', f: 'hypertensionChronic', l: 'Hipertensión Crónica' }, { c: 'medical', f: 'diabetesPreexisting', l: 'Diabetes Mellitus' }, { c: 'reproductive', f: 'previousAbortion2_plus', l: '2+ Abortos Previos' }, { c: 'reproductive', f: 'previousPreeclampsia', l: 'Preeclampsia previa' }].map(item => (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[
+                  { c: 'medical', f: 'hypertensionChronic', l: 'Hipertensión Crónica' }, 
+                  { c: 'medical', f: 'diabetesPreexisting', l: 'Diabetes Mellitus' }, 
+                  { c: 'medical', f: 'herpesHistory', l: 'Antecedentes de Herpes' },
+                  { c: 'medical', f: 'drugAllergies', l: 'Alergia Medicamentos' },
+                  { c: 'medical', f: 'anemia', l: 'Anemia' },
+                  { c: 'medical', f: 'myomas', l: 'Miomas' },
+                  { c: 'medical', f: 'recurrentUrinaryInfection', l: 'Infección Urinaria Recurrente' },
+                  { c: 'medical', f: 'infertilityHistory', l: 'Infertilidad' },
+                  { c: 'medical', f: 'mentalHealthHistory', l: 'Enf. Psiquiátricas' },
+                  { c: 'medical', f: 'cytologyAlterations', l: 'Alteraciones Citología' },
+                  { c: 'medical', f: 'epilepsy', l: 'Epilepsia' },
+                  { c: 'medical', f: 'liverPathology', l: 'Hepatopatías' },
+                  { c: 'medical', f: 'thyroidPathology', l: 'Trastornos Tiroides' },
+                  { c: 'reproductive', f: 'previousAbortion2_plus', l: '2+ Abortos Previos' }, 
+                  { c: 'reproductive', f: 'previousPreeclampsia', l: 'Preeclampsia previa' }
+                ].map(item => (
                   <label key={item.f} className={`flex items-center gap-4 p-4 rounded-2xl cursor-pointer border transition-all ${(formData.riskFactors[item.c as keyof RiskFactors] as any)[item.f] ? 'bg-ceres-mint border-ceres-primary' : 'bg-slate-50 border-transparent'} ${formData.riskFactors.medical.noRiskFactors ? 'opacity-40 pointer-events-none' : ''}`}>
                     <input type="checkbox" className="w-5 h-5 accent-ceres-primary" checked={(formData.riskFactors[item.c as keyof RiskFactors] as any)[item.f]} onChange={() => toggleRF(item.c as keyof RiskFactors, item.f)} />
-                    <span className="text-sm font-medium text-slate-700">{item.l}</span>
+                    <span className="text-[11px] font-bold text-slate-700 leading-tight">{item.l}</span>
                   </label>
                 ))}
               </div>
@@ -324,11 +414,21 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
                   <span className="font-bold text-rose-900 block">Sin factores de riesgo obstétrico</span>
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[{ c: 'currentPregnancy', f: 'multiplePregnancy', l: 'Embarazo Múltiple' }, { c: 'currentPregnancy', f: 'threatenedPreterm', l: 'Amenaza Parto Pretérmino' }, { c: 'currentPregnancy', f: 'hemorrhage', l: 'Hemorragia Gestacional' }, { c: 'medical', f: 'diabetesGestational', l: 'Diabetes Gestacional' }].map(item => (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[
+                  { c: 'currentPregnancy', f: 'multiplePregnancy', l: 'Embarazo Múltiple' }, 
+                  { c: 'currentPregnancy', f: 'threatenedPreterm', l: 'Amenaza Parto Pretérmino' }, 
+                  { c: 'currentPregnancy', f: 'hemorrhage', l: 'Hemorragia Gestacional' }, 
+                  { c: 'currentPregnancy', f: 'placentaPrevia', l: 'Placenta Previa' },
+                  { c: 'currentPregnancy', f: 'amnioticFluidAlteration', l: 'Alteración Líquido Amniótico' },
+                  { c: 'currentPregnancy', f: 'urinaryInfection', l: 'Infección Urinaria' },
+                  { c: 'currentPregnancy', f: 'congenitalDefect', l: 'Defecto Fetal Congénito' },
+                  { c: 'currentPregnancy', f: 'rciu', l: 'Retardo Crecimiento (RCIU)' },
+                  { c: 'medical', f: 'diabetesGestational', l: 'Diabetes Gestacional' }
+                ].map(item => (
                   <label key={item.f} className={`flex items-center gap-4 p-4 rounded-2xl cursor-pointer border transition-all ${(formData.riskFactors[item.c as keyof RiskFactors] as any)[item.f] ? 'bg-rose-50 border-rose-200' : 'bg-slate-50 border-transparent'} ${formData.riskFactors.currentPregnancy.noObstetricRiskFactors ? 'opacity-40 pointer-events-none' : ''}`}>
                     <input type="checkbox" className="w-5 h-5 accent-rose-500" checked={(formData.riskFactors[item.c as keyof RiskFactors] as any)[item.f]} onChange={() => toggleRF(item.c as keyof RiskFactors, item.f)} />
-                    <span className="text-sm font-medium text-slate-700">{item.l}</span>
+                    <span className="text-[11px] font-bold text-slate-700 leading-tight">{item.l}</span>
                   </label>
                 ))}
               </div>

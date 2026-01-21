@@ -5,6 +5,7 @@ export interface HealthRecord {
   systolic: number;
   diastolic: number;
   heartRate: number;
+  fetalHeartRate?: number; // Latidos fetales por minuto
 }
 
 export interface PrenatalExam {
@@ -61,6 +62,14 @@ export interface RiskFactors {
     hiv_syphilis: boolean;
     cancerRemission: boolean;
     mentalHealthHistory: boolean;
+    herpesHistory: boolean;
+    drugAllergies: boolean;
+    infertilityHistory: boolean;
+    cytologyAlterations: boolean;
+    liverPathology: boolean;
+    anemia: boolean;
+    myomas: boolean;
+    recurrentUrinaryInfection: boolean;
   };
   reproductive: {
     previousAbortion2_plus: boolean;
@@ -80,6 +89,10 @@ export interface RiskFactors {
     poly_oligohydramnios: boolean;
     hemorrhage: boolean;
     perinatalInfection: boolean;
+    placentaPrevia: boolean;
+    amnioticFluidAlteration: boolean;
+    urinaryInfection: boolean;
+    congenitalDefect: boolean;
   };
 }
 
@@ -96,6 +109,7 @@ export interface UserProfile {
   phone: string;
   department: string;
   municipality: string;
+  village?: string; // Vereda o Corregimiento
   address: string;
   coordinates?: {
     lat: number;

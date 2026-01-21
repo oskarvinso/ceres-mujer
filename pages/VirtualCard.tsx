@@ -2,66 +2,75 @@
 import React, { useState, useEffect } from 'react';
 import { 
   ShieldCheck, 
-  Fingerprint, 
   Activity, 
   Check, 
   X,
   ChevronDown,
   ChevronUp,
-  AlertCircle,
-  Stethoscope,
-  Utensils,
-  Dumbbell,
   ClipboardList,
-  Edit3,
-  Heart,
-  Scale,
-  Thermometer,
-  Info,
-  Droplets,
-  Zap,
   FileText,
   Mail,
-  Loader2
+  Loader2,
+  Printer,
+  Share2,
+  AlertTriangle,
+  Info,
+  Dumbbell,
+  CheckCircle2,
+  AlertCircle,
+  Footprints,
+  HeartPulse,
+  UtensilsCrossed,
+  Wind,
+  Smile,
+  AlertOctagon,
+  BookOpenCheck,
+  Download,
+  Baby,
+  Calendar,
+  Stethoscope,
+  Clock,
+  // Fix: Added missing User import from lucide-react
+  User
 } from 'lucide-react';
-import { UserProfile, ExamCategory, PrenatalExam, PrenatalControlTrack } from '../types.ts';
+import { UserProfile, ExamCategory, PrenatalControlTrack } from '../types.ts';
 
-const INITIAL_EXAM_SCHEDULE: ExamCategory[] = [
+const BLOOD_TYPES = ['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-'];
+
+const COMPREHENSIVE_EXAMS: ExamCategory[] = [
   {
-    id: 'cat1',
+    id: 'ingreso',
     title: 'Exámenes de Ingreso',
-    subtitle: 'Laboratorio Inicial',
+    subtitle: 'Protocolo Inicial Obligatorio',
     exams: [
-      { id: 'e1', name: 'Tipo de sangre y RH', status: 'pending' },
-      { id: 'e2', name: 'Rubeola IG', status: 'pending' },
-      { id: 'e3', name: 'FTA Absorbido', status: 'pending' },
-      { id: 'e4', name: 'Gran de orina sin centrifugar', status: 'pending' },
-      { id: 'e5', name: 'Ferritina', status: 'pending' },
-      { id: 'e6', name: 'Toxoplasmosis IG G y IG M', status: 'pending' },
-      { id: 'e7', name: 'Hemoleucograma', status: 'pending' },
-      { id: 'e8', name: 'Citomegalovirus IG G y IG M', status: 'pending' },
-      { id: 'e9', name: 'Antig Ags HB', status: 'pending' },
-      { id: 'e10', name: 'TSH', status: 'pending' },
-      { id: 'e11', name: 'Citología Oncológica', status: 'pending' },
-      { id: 'e12', name: 'VDRL', status: 'pending' },
-      { id: 'e13', name: 'Urocultivo', status: 'pending' },
-      { id: 'e14', name: 'Uroanalisis', status: 'pending' },
-      { id: 'e15', name: 'HIV', status: 'pending' },
-      { id: 'e16', name: 'Directo y Gran de Flujo', status: 'pending' },
+      { id: 'i1', name: 'HCT/HB (Hemoglobina/Hematocrito)', status: 'pending' },
+      { id: 'i2', name: 'IGG Rubeola', status: 'pending' },
+      { id: 'i3', name: 'IGM Rubeola', status: 'pending' },
+      { id: 'i4', name: 'Citomegalovirus IgG', status: 'pending' },
+      { id: 'i5', name: 'Citomegalovirus IgM', status: 'pending' },
+      { id: 'i6', name: 'VDRL / Sífilis', status: 'pending' },
+      { id: 'i7', name: 'Parcial de Orina', status: 'pending' },
+      { id: 'i8', name: 'Directo y Gram de Flujo', status: 'pending' },
+      { id: 'i9', name: 'Urocultivo', status: 'pending' },
+      { id: 'i10', name: 'HBsAg (Hepatitis B)', status: 'pending' },
+      { id: 'i11', name: 'HIV (VIH 1 y 2)', status: 'pending' },
+      { id: 'i12', name: 'TSH (Tiroides)', status: 'pending' },
+      { id: 'i13', name: 'Coprológico', status: 'pending' },
+      { id: 'i14', name: 'Ferritina', status: 'pending' },
+      { id: 'i15', name: 'Citología Oncogénica', status: 'pending' },
     ]
   },
   {
-    id: 'cat2',
-    title: 'Exámenes Semanas 8 a 20',
+    id: 'visita8-20',
+    title: 'Visita (8 - 20 SM)',
+    subtitle: 'Tamizaje Genético y Morfológico',
     exams: [
-      { id: 'e20', name: '(DIA 1)(8-13) HCG +PAPP -A', status: 'pending' },
-      { id: 'e21', name: '(DIA 2)(11-13) Ultrasonido, TN y Datación', status: 'pending' },
-      { id: 'e22', name: '14 Semanas hCG, AFP, uE3 E INHIBIDA A', status: 'pending' },
-      { id: 'e23', name: 'Cervicometria mayor de 15 semanas', status: 'pending' },
-      { id: 'e24', name: '18-20 Ecografía morfología', status: 'pending' },
-      { id: 'e25', name: 'Doppler de arteria uterina', status: 'pending' },
-      { id: 'e26', name: 'Coombs Indirecto semana 16', status: 'pending' },
-      { id: 'e27', name: 'Coombs Indirecto semana 20', status: 'pending' },
+      { id: 'v1_1', name: '(Día 1)(8-13) fβ-Hcg + PAPP-A', status: 'pending' },
+      { id: 'v1_2', name: '(Día 2)(11-13) Ultra Sonido, TN y Datación', status: 'pending' },
+      { id: 'v1_3', name: '(> 14) fβ-Hcg, AFP, Ue3 e INHIBINA A', status: 'pending' },
+      { id: 'v1_4', name: '(> 15) Cervicometría', status: 'pending' },
+      { id: 'v1_5', name: '(18-20) Ecografía Morfológica', status: 'pending' },
+      { id: 'v1_6', name: '(20) Doppler de Arterias Uterinas', status: 'pending' },
     ]
   }
 ];
@@ -72,11 +81,6 @@ const INITIAL_CONTROLS: PrenatalControlTrack[] = [
   { id: 'c3', title: '3. ¿Crees tener problemas genéticos?', hasControl: false, hasNutrition: false, hasExercise: false, hasDocument: false, completed: false },
   { id: 'c4', title: '4. Postura en el embarazo', hasControl: false, hasNutrition: false, hasExercise: false, hasDocument: false, completed: false },
   { id: 'c5', title: '5. Mamá activa mas esperanza de vida', hasControl: false, hasNutrition: false, hasExercise: false, hasDocument: false, completed: false },
-  { id: 'c6', title: '6. Relación mente cerebro y parto prematuro', hasControl: false, hasNutrition: false, hasExercise: false, hasDocument: false, completed: false },
-  { id: 'c7', title: '7. Factor RH y sexualidad', hasControl: false, hasNutrition: false, hasExercise: false, hasDocument: false, completed: false },
-  { id: 'c8', title: '8. Prepara tu parto', hasControl: false, hasNutrition: false, hasExercise: false, hasDocument: false, completed: false },
-  { id: 'c9', title: '9. Vence el dolor', hasControl: false, hasNutrition: false, hasExercise: false, hasDocument: false, completed: false },
-  { id: 'c10', title: '10. Vía del parto', hasControl: false, hasNutrition: false, hasExercise: false, hasDocument: false, completed: false },
 ];
 
 const VirtualCard: React.FC = () => {
@@ -84,16 +88,40 @@ const VirtualCard: React.FC = () => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [examSchedule, setExamSchedule] = useState<ExamCategory[]>([]);
   const [prenatalControls, setPrenatalControls] = useState<PrenatalControlTrack[]>([]);
-  const [expandedCatId, setExpandedCatId] = useState<string | null>('cat1');
+  const [expandedCatId, setExpandedCatId] = useState<string | null>('ingreso');
   const [sendingDocId, setSendingDocId] = useState<string | null>(null);
   const [showToast, setShowToast] = useState<string | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
+
+  // Activity States
+  const [motherType, setMotherType] = useState<'active' | 'sedentary'>('sedentary');
+  const [questionnaire, setQuestionnaire] = useState<Record<string, boolean>>({});
+
+  const questionnaireQuestions = [
+    { id: 'q1', text: '¿Tiene Diabetes Tipo I no controlada?' },
+    { id: 'q2', text: '¿Cuenta con evidencia de restricción de crecimiento fetal?' },
+    { id: 'q3', text: '¿Presenta ruptura de membranas o parto prematuro?' },
+    { id: 'q4', text: '¿Tiene Hipertensión inducida por el embarazo?' },
+    { id: 'q5', text: '¿Sangrado persistente en el 2do o 3er trimestre?' },
+    { id: 'q6', text: '¿Sufre de otras enfermedades cardiovasculares o sistémicas?' },
+    { id: 'q7', text: '¿Presenta incompetencia cervical o cuello corto?' },
+    { id: 'q8', text: '¿Tiene un embarazo múltiple?' },
+    { id: 'q9', text: '¿Historial de aborto espontáneo en embarazos previos?' },
+    { id: 'q10', text: '¿Embarazo gemelar luego de las 28 semanas?' },
+    { id: 'q11', text: '¿Presenta malnutrición o desorden alimenticio?' },
+    { id: 'q12', text: '¿Tiene Anemia o deficiencia de hierro severa?' },
+    { id: 'q13', text: '¿Enfermedad respiratoria moderada (asma no controlada)?' },
+    { id: 'q14', text: '¿Alguna otra condición médica significativa?' }
+  ];
+
+  const hasContraindications = Object.values(questionnaire).some(val => val === true);
 
   useEffect(() => {
     const savedProfile = localStorage.getItem('ceres_profile');
     if (savedProfile) {
       const parsed = JSON.parse(savedProfile);
       setProfile(parsed);
-      setExamSchedule(parsed.examSchedule || INITIAL_EXAM_SCHEDULE);
+      setExamSchedule(parsed.examSchedule || COMPREHENSIVE_EXAMS);
       setPrenatalControls(parsed.prenatalControls || INITIAL_CONTROLS);
     }
   }, []);
@@ -118,9 +146,8 @@ const VirtualCard: React.FC = () => {
           ...cat,
           exams: cat.exams.map(ex => {
             if (ex.id === examId) {
-              const currentStatus = ex.status;
-              const newStatus = currentStatus === status ? 'pending' : status;
-              return { ...ex, status: newStatus as 'pending' | 'normal' | 'abnormal' };
+              const newStatus = ex.status === status ? 'pending' : status;
+              return { ...ex, status: newStatus as any };
             }
             return ex;
           })
@@ -143,14 +170,28 @@ const VirtualCard: React.FC = () => {
     saveUpdates(examSchedule, updated);
   };
 
-  const handleSendDocument = (ctrl: PrenatalControlTrack) => {
-    setSendingDocId(ctrl.id);
-    // Simulating email sending
+  const getHRRange = () => {
+    const age = profile?.age || 25;
+    if (motherType === 'sedentary') {
+      if (age < 20) return "135 - 145 lpm";
+      if (age <= 29) return "131 - 141 lpm";
+      return "126 - 135 lpm";
+    } else {
+      if (age < 20) return "140 - 155 lpm";
+      if (age <= 29) return "135 - 150 lpm";
+      return "130 - 145 lpm";
+    }
+  };
+
+  const handlePortarCarnet = () => {
+    setIsExporting(true);
+    // Simular preparación y descarga del PDF original del carnet
     setTimeout(() => {
-      handleControlToggle(ctrl.id, 'hasDocument');
-      setSendingDocId(null);
-      setShowToast(`Documento de "${ctrl.title}" enviado a ${profile?.email}`);
-      setTimeout(() => setShowToast(null), 4000);
+      const pdfUrl = "https://www.ginecologaalvaro.com/documentos/carnet_valoracion_fisica_ceres.pdf";
+      window.open(pdfUrl, '_blank');
+      setIsExporting(false);
+      setShowToast("Abriendo carnet original para impresión...");
+      setTimeout(() => setShowToast(null), 3000);
     }, 1500);
   };
 
@@ -161,13 +202,13 @@ const VirtualCard: React.FC = () => {
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-12 space-y-12 animate-in fade-in duration-700 pb-24 relative">
+    <div className="max-w-7xl mx-auto px-4 py-12 space-y-12 animate-in fade-in duration-700 pb-24 relative print:p-0 print:m-0">
       {/* Toast Notification */}
       {showToast && (
-        <div className="fixed bottom-10 right-10 z-[110] bg-ceres-dark text-white px-8 py-5 rounded-3xl shadow-2xl flex items-center gap-4 animate-in slide-in-from-bottom-5 duration-300">
-          <Mail className="w-6 h-6 text-ceres-secondary" />
+        <div className="fixed bottom-10 right-10 z-[110] bg-ceres-dark text-white px-8 py-5 rounded-3xl shadow-2xl flex items-center gap-4 animate-in slide-in-from-bottom-5 duration-300 print:hidden">
+          <Share2 className="w-6 h-6 text-ceres-secondary" />
           <div className="flex flex-col">
-            <span className="text-xs font-bold uppercase tracking-widest">Correo Enviado</span>
+            <span className="text-xs font-bold uppercase tracking-widest">Sistema Ceres</span>
             <span className="text-[11px] font-medium opacity-90">{showToast}</span>
           </div>
           <button onClick={() => setShowToast(null)} className="ml-4 p-1 hover:bg-white/10 rounded-full"><X className="w-4 h-4" /></button>
@@ -175,39 +216,45 @@ const VirtualCard: React.FC = () => {
       )}
 
       {/* Tab Selector */}
-      <div className="flex bg-white p-2 rounded-full border border-ceres-mint shadow-lg w-fit mx-auto mb-10 overflow-hidden">
+      <div className="flex bg-white p-2 rounded-full border border-ceres-mint shadow-lg w-fit mx-auto mb-10 overflow-hidden print:hidden">
          <button 
            onClick={() => setActiveTab('labs')} 
            className={`px-10 py-4 rounded-full font-bold text-[11px] uppercase tracking-widest transition-all ${activeTab === 'labs' ? 'bg-ceres-primary text-white shadow-md' : 'text-slate-400 hover:text-ceres-primary hover:bg-ceres-light'}`}
          >
-           Salud y Laboratorios
+           Laboratorios y Controles
          </button>
          <button 
            onClick={() => setActiveTab('activity')} 
-           className={`px-10 py-4 rounded-full font-bold text-[11px] uppercase tracking-widest transition-all ${activeTab === 'activity' ? 'bg-[#0097A7] text-white shadow-md' : 'text-slate-400 hover:text-[#0097A7] hover:bg-cyan-50'}`}
+           className={`px-10 py-4 rounded-full font-bold text-[11px] uppercase tracking-widest transition-all ${activeTab === 'activity' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-400 hover:text-emerald-600 hover:bg-emerald-50'}`}
          >
-           Actividad Física
+           Carnet de Actividad Física
          </button>
       </div>
 
       {activeTab === 'labs' ? (
-        <div className="bg-white rounded-[40px] border border-ceres-mint shadow-2xl overflow-hidden">
+        <div className="bg-white rounded-[40px] border border-ceres-mint shadow-2xl overflow-hidden print:shadow-none print:border-none">
           {/* Clinical Header */}
-          <div className="bg-ceres-dark p-10 text-white flex flex-col md:flex-row justify-between items-center gap-8 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-ceres-primary rounded-full -mr-32 -mt-32 opacity-20 blur-3xl"></div>
+          <div className="bg-ceres-dark p-10 text-white flex flex-col md:flex-row justify-between items-center gap-8 relative overflow-hidden print:bg-slate-100 print:text-black">
             <div className="flex items-center gap-6 relative z-10">
-              <div className="w-20 h-20 bg-white/10 backdrop-blur-md rounded-[28px] flex items-center justify-center border border-white/20">
-                <ShieldCheck className="w-10 h-10 text-white" />
+              <div className="w-20 h-20 bg-white/10 backdrop-blur-md rounded-[28px] flex items-center justify-center border border-white/20 print:bg-slate-200">
+                <ShieldCheck className="w-10 h-10 text-white print:text-slate-600" />
               </div>
               <div>
                 <h2 className="text-3xl font-serif font-bold">{profile.name} {profile.lastName}</h2>
-                <div className="flex gap-4 mt-1">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-ceres-secondary">ID: {profile.idNumber}</p>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-ceres-primary">Grupo: {profile.bloodType || 'N/A'}</p>
+                <div className="flex gap-4 mt-2">
+                   <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-ceres-secondary">ID: {profile.idNumber}</p>
+                   <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-ceres-primary">Grupo: {profile.bloodType || 'N/A'}</p>
                 </div>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-8 relative z-10 text-right md:text-left">
+            <div className="flex gap-6 relative z-10 print:hidden">
+              <div className="flex flex-col items-center">
+                <p className="text-[8px] font-bold text-ceres-secondary uppercase tracking-widest">Latidos Fetal</p>
+                <div className="flex items-center gap-2">
+                  <Baby className="w-4 h-4 text-ceres-secondary" />
+                  <p className="text-xl font-bold">144 <span className="text-[10px] opacity-60">LPM</span></p>
+                </div>
+              </div>
               <div><p className="text-[8px] font-bold text-ceres-secondary uppercase tracking-widest">Semanas</p><p className="text-xl font-bold">{profile.gestationWeeks}</p></div>
               <div><p className="text-[8px] font-bold text-ceres-secondary uppercase tracking-widest">Riesgo</p><p className="text-xl font-bold text-ceres-primary">{localStorage.getItem('ceres_risk') || 'Bajo'}</p></div>
             </div>
@@ -215,40 +262,34 @@ const VirtualCard: React.FC = () => {
 
           <div className="p-8 md:p-12 border-b border-ceres-mint bg-ceres-light/30">
             <h3 className="text-2xl font-serif font-bold text-slate-800 flex items-center gap-4 mb-8"><ClipboardList className="w-8 h-8 text-ceres-primary" />Controles Prenatales (C-N-E-D)</h3>
-            <div className="grid grid-cols-1 gap-6">
+            <div className="grid grid-cols-1 gap-4">
               {prenatalControls.map((ctrl) => (
-                <div key={ctrl.id} className="bg-white p-6 rounded-[32px] border border-slate-100 flex flex-col md:flex-row items-start md:items-center justify-between shadow-sm group hover:border-ceres-primary transition-all gap-6">
-                  <div className="space-y-1">
-                    <span className="text-sm font-bold text-slate-800 pr-4 leading-tight block">{ctrl.title}</span>
-                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Registro de Visita Médica</span>
+                <div key={ctrl.id} className="bg-white p-5 rounded-[28px] border border-slate-100 flex flex-col md:flex-row items-start md:items-center justify-between shadow-sm group hover:border-ceres-primary transition-all gap-4">
+                  <div className="space-y-0.5">
+                    <span className="text-sm font-bold text-slate-800 leading-tight block">{ctrl.title}</span>
+                    <span className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Control Ceres • Gestión de Documentación</span>
                   </div>
-                  <div className="flex items-center gap-3 w-full md:w-auto justify-end">
+                  <div className="flex items-center gap-3 w-full md:w-auto justify-end print:hidden">
                     <div className="flex items-center gap-2 pr-4 border-r border-slate-100">
-                      <button onClick={() => handleControlToggle(ctrl.id, 'hasControl')} className={`w-10 h-10 rounded-xl flex flex-col items-center justify-center border-2 transition-all group/btn ${ctrl.hasControl ? 'bg-ceres-primary border-ceres-primary text-white shadow-md' : 'bg-slate-50 border-slate-100 text-slate-300'}`}>
-                        <span className="text-[10px] font-black">C</span>
-                        <span className="text-[6px] font-bold uppercase hidden group-hover/btn:block">Ctrl</span>
-                      </button>
-                      <button onClick={() => handleControlToggle(ctrl.id, 'hasNutrition')} className={`w-10 h-10 rounded-xl flex flex-col items-center justify-center border-2 transition-all group/btn ${ctrl.hasNutrition ? 'bg-orange-400 border-orange-400 text-white shadow-md' : 'bg-slate-50 border-slate-100 text-slate-300'}`}>
-                        <span className="text-[10px] font-black">N</span>
-                        <span className="text-[6px] font-bold uppercase hidden group-hover/btn:block">Nutr</span>
-                      </button>
-                      <button onClick={() => handleControlToggle(ctrl.id, 'hasExercise')} className={`w-10 h-10 rounded-xl flex flex-col items-center justify-center border-2 transition-all group/btn ${ctrl.hasExercise ? 'bg-blue-400 border-blue-400 text-white shadow-md' : 'bg-slate-50 border-slate-100 text-slate-300'}`}>
-                        <span className="text-[10px] font-black">E</span>
-                        <span className="text-[6px] font-bold uppercase hidden group-hover/btn:block">Ejerc</span>
-                      </button>
+                      <button onClick={() => handleControlToggle(ctrl.id, 'hasControl')} className={`w-9 h-9 rounded-xl flex flex-col items-center justify-center border-2 transition-all ${ctrl.hasControl ? 'bg-ceres-primary border-ceres-primary text-white shadow-md' : 'bg-slate-50 border-slate-100 text-slate-300'}`}><span className="text-[10px] font-black">C</span></button>
+                      <button onClick={() => handleControlToggle(ctrl.id, 'hasNutrition')} className={`w-9 h-9 rounded-xl flex flex-col items-center justify-center border-2 transition-all ${ctrl.hasNutrition ? 'bg-orange-400 border-orange-400 text-white shadow-md' : 'bg-slate-50 border-slate-100 text-slate-300'}`}><span className="text-[10px] font-black">N</span></button>
+                      <button onClick={() => handleControlToggle(ctrl.id, 'hasExercise')} className={`w-9 h-9 rounded-xl flex flex-col items-center justify-center border-2 transition-all ${ctrl.hasExercise ? 'bg-blue-400 border-blue-400 text-white shadow-md' : 'bg-slate-50 border-slate-100 text-slate-300'}`}><span className="text-[10px] font-black">E</span></button>
                     </div>
-                    
                     <button 
-                      onClick={() => handleSendDocument(ctrl)} 
+                      onClick={() => {
+                        setSendingDocId(ctrl.id);
+                        setTimeout(() => {
+                          handleControlToggle(ctrl.id, 'hasDocument');
+                          setSendingDocId(null);
+                          setShowToast("Documento médico enviado a tu correo.");
+                          setTimeout(() => setShowToast(null), 3000);
+                        }, 1000);
+                      }} 
                       disabled={sendingDocId === ctrl.id}
-                      className={`h-10 px-4 rounded-xl flex items-center justify-center gap-2 border-2 transition-all group/doc ${ctrl.hasDocument ? 'bg-ceres-secondary border-ceres-secondary text-white shadow-md' : 'bg-slate-50 border-slate-100 text-slate-400 hover:border-ceres-secondary hover:text-ceres-secondary'}`}
+                      className={`h-9 px-4 rounded-xl flex items-center gap-2 border-2 transition-all ${ctrl.hasDocument ? 'bg-ceres-secondary border-ceres-secondary text-white shadow-md' : 'bg-slate-50 border-slate-100 text-slate-400'}`}
                     >
-                      {sendingDocId === ctrl.id ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <FileText className="w-4 h-4" />
-                      )}
-                      <span className="text-[10px] font-bold uppercase tracking-widest">Documento</span>
+                      {sendingDocId === ctrl.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <FileText className="w-3 h-3" />}
+                      <span className="text-[9px] font-bold uppercase tracking-widest">Documento</span>
                     </button>
                   </div>
                 </div>
@@ -257,26 +298,25 @@ const VirtualCard: React.FC = () => {
           </div>
 
           <div className="p-8 md:p-12 space-y-10">
-            <div className="flex items-center justify-between">
-              <h3 className="text-2xl font-serif font-bold text-slate-800 flex items-center gap-3"><Activity className="w-7 h-7 text-ceres-primary" />Checklist de Laboratorio</h3>
-            </div>
+            <h3 className="text-2xl font-serif font-bold text-slate-800 flex items-center gap-3"><Activity className="w-7 h-7 text-ceres-primary" />Seguimiento de Laboratorios</h3>
             <div className="grid grid-cols-1 gap-6">
               {examSchedule.map((category) => (
-                <div key={category.id} className="bg-slate-50 rounded-[32px] border border-slate-100 overflow-hidden">
+                <div key={category.id} className="bg-slate-50 rounded-[32px] border border-slate-100 overflow-hidden shadow-sm">
                   <button onClick={() => setExpandedCatId(expandedCatId === category.id ? null : category.id)} className="w-full p-6 flex items-center justify-between hover:bg-slate-100 transition-colors">
-                    <div className="text-left"><span className="text-lg font-bold text-slate-800">{category.title}</span></div>
+                    <div className="text-left space-y-1">
+                      <span className="text-lg font-bold text-slate-800 block">{category.title}</span>
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{category.subtitle}</span>
+                    </div>
                     {expandedCatId === category.id ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
                   </button>
                   {expandedCatId === category.id && (
-                    <div className="p-6 pt-0 divide-y divide-white/60">
+                    <div className="p-6 pt-0 divide-y divide-white">
                       {category.exams.map((exam) => (
-                        <div key={exam.id} className="py-5 flex flex-col gap-4">
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm font-bold text-slate-700">{exam.name}</span>
-                            <div className="flex bg-white rounded-2xl p-1 shadow-sm border border-slate-100">
-                              <button onClick={() => handleStatusToggle(category.id, exam.id, 'normal')} className={`px-4 py-2 rounded-xl text-[10px] font-black transition-all ${exam.status === 'normal' ? 'bg-emerald-500 text-white' : 'text-slate-300'}`}>N</button>
-                              <button onClick={() => handleStatusToggle(category.id, exam.id, 'abnormal')} className={`px-4 py-2 rounded-xl text-[10px] font-black transition-all ${exam.status === 'abnormal' ? 'bg-rose-500 text-white' : 'text-slate-300'}`}>ANOR</button>
-                            </div>
+                        <div key={exam.id} className="py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                          <span className="text-sm font-medium text-slate-700">{exam.name}</span>
+                          <div className="flex gap-1.5 bg-white p-1 rounded-2xl shadow-sm border border-slate-100">
+                            <button onClick={() => handleStatusToggle(category.id, exam.id, 'normal')} className={`px-4 py-1.5 rounded-xl text-[10px] font-black transition-all ${exam.status === 'normal' ? 'bg-emerald-500 text-white shadow-md' : 'text-slate-300'}`}>N</button>
+                            <button onClick={() => handleStatusToggle(category.id, exam.id, 'abnormal')} className={`px-4 py-1.5 rounded-xl text-[10px] font-black transition-all ${exam.status === 'abnormal' ? 'bg-rose-500 text-white shadow-md' : 'text-slate-300'}`}>AN</button>
                           </div>
                         </div>
                       ))}
@@ -288,196 +328,224 @@ const VirtualCard: React.FC = () => {
           </div>
         </div>
       ) : (
-        <div className="bg-white rounded-[40px] border border-cyan-100 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-500">
-           {/* PDF Header Style: VALORACIÓN ESTADO FÍSICO MATERNO */}
-           <div className="bg-[#00BCD4] p-12 text-white flex justify-between items-center border-b-[8px] border-[#0097A7]">
-              <div className="space-y-2">
-                <p className="text-xs font-bold tracking-[0.4em] uppercase opacity-90">Protocolo Ceres Mujer</p>
-                <h3 className="text-4xl md:text-5xl font-serif font-black tracking-tight leading-none uppercase">
-                  VALORACIÓN <br/>
-                  <span className="text-[#E0F7FA]">ESTADO FÍSICO</span> <br/>
-                  MATERNO
+        /* CARNET VERDE - ACTIVIDAD FÍSICA */
+        <div className="bg-white rounded-[40px] border border-emerald-100 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-500 max-w-5xl mx-auto">
+           {/* Header estilo Carnet Médico Verde */}
+           <div className="bg-emerald-600 p-8 text-white flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b-[6px] border-emerald-700 relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-2 opacity-10">
+                <Dumbbell className="w-40 h-40 -rotate-12" />
+              </div>
+              <div className="space-y-2 relative z-10">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-white/20 rounded-xl"><Activity className="w-6 h-6" /></div>
+                  <p className="text-[10px] font-bold tracking-[0.4em] uppercase opacity-90">Protocolo Clínico Ceres</p>
+                </div>
+                <h3 className="text-3xl md:text-4xl font-serif font-black tracking-tight leading-none uppercase italic">
+                  CARNET VERDE <br/>
+                  <span className="text-emerald-100">PRESCRIPCIÓN DE EJERCICIO</span>
                 </h3>
               </div>
-              <div className="hidden md:block">
-                 <div className="w-40 h-40 bg-white/20 backdrop-blur-lg rounded-full flex items-center justify-center border-4 border-white/40">
-                    <Activity className="w-20 h-20 text-white" />
+              <div className="bg-white/10 backdrop-blur-md p-4 rounded-3xl border border-white/20 relative z-10">
+                 <p className="text-[10px] font-bold uppercase tracking-widest mb-1 opacity-80">Estado de Aval</p>
+                 <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-300" />
+                    <span className="text-sm font-black uppercase">Física Apta</span>
                  </div>
               </div>
            </div>
 
-           <div className="p-8 md:p-14 grid grid-cols-1 lg:grid-cols-3 gap-10">
-              {/* Panel 1: Prescripción Médica (Matches PDF structure) */}
-              <div className="space-y-10 lg:border-r lg:border-cyan-50 lg:pr-10">
-                 <div className="space-y-6">
-                    <div className="relative">
-                      <div className="bg-[#0097A7] text-white py-3 px-8 rounded-tr-3xl rounded-bl-3xl w-fit font-bold uppercase text-[11px] tracking-widest relative z-10 shadow-md">
-                        Prescripción Médica
+           <div className="p-8 md:p-12 space-y-12">
+              {/* Resumen del Paciente para la Formula */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="p-5 bg-emerald-50 rounded-3xl border border-emerald-100 flex flex-col items-center text-center">
+                  <User className="w-5 h-5 text-emerald-600 mb-2" />
+                  <p className="text-[9px] font-black text-emerald-800 uppercase tracking-widest">Paciente</p>
+                  <p className="text-sm font-bold text-slate-800">{profile.name} {profile.lastName}</p>
+                </div>
+                <div className="p-5 bg-emerald-50 rounded-3xl border border-emerald-100 flex flex-col items-center text-center">
+                  <Clock className="w-5 h-5 text-emerald-600 mb-2" />
+                  <p className="text-[9px] font-black text-emerald-800 uppercase tracking-widest">Gestación</p>
+                  <p className="text-sm font-bold text-slate-800">Semana {profile.gestationWeeks}</p>
+                </div>
+                <div className="p-5 bg-emerald-50 rounded-3xl border border-emerald-100 flex flex-col items-center text-center">
+                  <HeartPulse className="w-5 h-5 text-emerald-600 mb-2" />
+                  <p className="text-[9px] font-black text-emerald-800 uppercase tracking-widest">Zona F.C.</p>
+                  <p className="text-sm font-bold text-slate-800">{getHRRange()}</p>
+                </div>
+              </div>
+
+              {/* Módulo de Prescripción (Carnet Verde Original) */}
+              <div className="space-y-8">
+                <div className="flex items-center gap-4 border-b-2 border-emerald-100 pb-4">
+                  <Stethoscope className="w-6 h-6 text-emerald-600" />
+                  <h4 className="text-xl font-serif font-black text-slate-800 uppercase">Fórmula de Entrenamiento</h4>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                  <div className="space-y-6">
+                    <div className="bg-white p-6 rounded-[32px] border-2 border-emerald-100 shadow-sm relative overflow-hidden group">
+                      <div className="absolute top-0 right-0 bg-emerald-600 text-white p-2 rounded-bl-2xl">
+                        <Calendar className="w-4 h-4" />
                       </div>
-                      <div className="bg-cyan-50 h-1 w-full absolute top-1/2 -z-0"></div>
+                      <h5 className="text-xs font-black text-emerald-700 uppercase tracking-widest mb-4">Frecuencia Semanal</h5>
+                      <div className="flex gap-2">
+                        {[1, 2, 3, 4, 5, 6, 7].map(d => (
+                          <div key={d} className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${d <= 4 ? 'bg-emerald-500 text-white' : 'bg-slate-50 text-slate-300'}`}>{d}</div>
+                        ))}
+                      </div>
+                      <p className="text-[10px] font-bold text-slate-400 mt-3 uppercase">Mínimo sugerido: 3 a 5 días por semana</p>
                     </div>
-                    
-                    <div className="bg-white p-6 rounded-3xl border border-cyan-100 shadow-sm space-y-4">
-                       <div className="flex justify-between border-b border-cyan-50 pb-2">
-                         <span className="text-[10px] font-bold text-slate-400 uppercase">Nombre:</span>
-                         <span className="text-xs font-bold text-[#006064]">{profile.name}</span>
-                       </div>
-                       <div className="grid grid-cols-2 gap-4">
-                         <div className="border-b border-cyan-50 pb-2">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase block">Trimestre:</span>
-                            <span className="text-xs font-bold text-[#006064]">2do</span>
-                         </div>
-                         <div className="border-b border-cyan-50 pb-2">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase block">Latidos:</span>
-                            <span className="text-xs font-bold text-[#006064]">140 lpm</span>
-                         </div>
-                       </div>
-                       <div className="flex justify-around pt-2">
-                          {['Deportista', 'Activa', 'Sedentaria'].map(type => (
-                            <div key={type} className="flex flex-col items-center gap-1">
-                               <div className={`w-5 h-5 rounded-md border-2 ${type === 'Activa' ? 'bg-[#0097A7] border-[#0097A7]' : 'border-cyan-200'} flex items-center justify-center`}>
-                                  {type === 'Activa' && <Check className="w-4 h-4 text-white" />}
-                               </div>
-                               <span className="text-[9px] font-bold text-slate-400 uppercase">{type}</span>
+
+                    <div className="bg-white p-6 rounded-[32px] border-2 border-emerald-100 shadow-sm relative overflow-hidden">
+                       <h5 className="text-xs font-black text-emerald-700 uppercase tracking-widest mb-4">Intensidad Sugerida</h5>
+                       <div className="space-y-3">
+                         <div className="h-4 bg-slate-100 rounded-full overflow-hidden flex">
+                            <div className="w-1/3 h-full bg-emerald-300"></div>
+                            <div className="w-1/3 h-full bg-emerald-500 relative">
+                               <div className="absolute -top-1 -right-1 w-6 h-6 bg-white border-4 border-emerald-600 rounded-full"></div>
                             </div>
-                          ))}
+                            <div className="w-1/3 h-full bg-slate-200"></div>
+                         </div>
+                         <div className="flex justify-between text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                            <span>Leve</span>
+                            <span className="text-emerald-600">Moderada (Borg 12-14)</span>
+                            <span>Vigorosa</span>
+                         </div>
                        </div>
                     </div>
-                 </div>
+                  </div>
 
-                 <div className="space-y-6">
-                    <div className="relative">
-                      <div className="bg-[#0097A7] text-white py-3 px-8 rounded-tr-3xl rounded-bl-3xl w-fit font-bold uppercase text-[11px] tracking-widest relative z-10 shadow-md">
-                        Ejercicios Aeróbicos
-                      </div>
-                      <div className="bg-cyan-50 h-1 w-full absolute top-1/2 -z-0"></div>
+                  <div className="bg-emerald-900 rounded-[40px] p-8 text-white space-y-6 relative shadow-xl">
+                    <h5 className="text-sm font-black text-emerald-400 uppercase tracking-[0.2em] flex items-center gap-3">
+                      <Dumbbell className="w-5 h-5" /> Tipos de Ejercicio
+                    </h5>
+                    <div className="space-y-4">
+                       <div className="flex items-start gap-4 p-4 bg-white/5 rounded-2xl border border-white/10">
+                          <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-1" />
+                          <div>
+                            <p className="text-sm font-bold leading-none mb-1">Aeróbico (Cardiovascular)</p>
+                            <p className="text-[10px] opacity-70 leading-relaxed uppercase">Caminata, natación o elíptica. Sin impacto excesivo.</p>
+                          </div>
+                       </div>
+                       <div className="flex items-start gap-4 p-4 bg-white/5 rounded-2xl border border-white/10">
+                          <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-1" />
+                          <div>
+                            <p className="text-sm font-bold leading-none mb-1">Fuerza y Resistencia</p>
+                            <p className="text-[10px] opacity-70 leading-relaxed uppercase">Pesas livianas, bandas elásticas o propio peso.</p>
+                          </div>
+                       </div>
+                       <div className="flex items-start gap-4 p-4 bg-white/5 rounded-2xl border border-white/10">
+                          <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-1" />
+                          <div>
+                            <p className="text-sm font-bold leading-none mb-1">Flexibilidad y Estiramiento</p>
+                            <p className="text-[10px] opacity-70 leading-relaxed uppercase">Yoga prenatal, estiramientos de cadena posterior.</p>
+                          </div>
+                       </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-3">
-                       {['Caminar', 'Nadar', 'Yoga', 'Pilates', 'Zumba', 'Nadar'].map(ex => (
-                         <div key={ex} className="flex items-center gap-2 p-3 bg-cyan-50/50 rounded-xl border border-cyan-100">
-                            <div className="w-3 h-3 rounded-full bg-[#0097A7]"></div>
-                            <span className="text-[10px] font-bold text-[#006064] uppercase">{ex}</span>
-                         </div>
-                       ))}
-                    </div>
-                    <div className="p-4 bg-[#E0F7FA] rounded-2xl text-[10px] font-bold text-[#006064] text-center uppercase tracking-widest">
-                       Frecuencia: 2 a 3 veces / semana
-                    </div>
-                 </div>
+                  </div>
+                </div>
               </div>
 
-              {/* Panel 2: Recomendaciones & Objetivos */}
-              <div className="space-y-10 lg:border-r lg:border-cyan-50 lg:pr-10">
-                 <div className="space-y-6">
-                    <div className="relative">
-                      <div className="bg-[#0097A7] text-white py-3 px-8 rounded-tr-3xl rounded-bl-3xl w-fit font-bold uppercase text-[11px] tracking-widest relative z-10 shadow-md">
-                        Recomendaciones
-                      </div>
-                      <div className="bg-cyan-50 h-1 w-full absolute top-1/2 -z-0"></div>
+              {/* Cuestionario de Seguridad (Integrado) */}
+              <div className="bg-slate-50 p-8 rounded-[40px] border border-slate-100 space-y-6">
+                <div className="flex items-center gap-3">
+                   <AlertTriangle className="w-5 h-5 text-amber-500" />
+                   <h5 className="text-sm font-black text-slate-700 uppercase tracking-widest">Auto Cuestionario de Seguridad</h5>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {questionnaireQuestions.slice(0, 6).map(q => (
+                    <div key={q.id} className="flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
+                      <span className="text-[11px] font-bold text-slate-500 leading-tight pr-4">{q.text}</span>
+                      <button onClick={() => setQuestionnaire(prev => ({...prev, [q.id]: !prev[q.id]}))} className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${questionnaire[q.id] ? 'bg-rose-500 text-white' : 'bg-slate-100 text-slate-300'}`}>
+                        {questionnaire[q.id] ? <Check className="w-4 h-4" /> : <X className="w-4 h-4" />}
+                      </button>
                     </div>
-                    <div className="space-y-3">
-                       {[
-                         'Consulte a su médico antes de aumentar su nivel de actividad.',
-                         'Hacer ejercicio con regularidad pero no sobre-ejercer.',
-                         'Hacer ejercicio con una amiga embarazada o unirse a programa prenatal.',
-                         'Seguir los principios del FITT modificados para embarazadas.'
-                       ].map((rec, i) => (
-                         <div key={i} className="flex gap-3 p-4 bg-white border border-cyan-50 rounded-2xl shadow-sm italic text-xs text-slate-600">
-                            <Info className="w-4 h-4 text-[#00BCD4] shrink-0" />
-                            <p>{rec}</p>
-                         </div>
-                       ))}
-                    </div>
-                 </div>
-
-                 <div className="space-y-6">
-                    <div className="relative">
-                      <div className="bg-[#0097A7] text-white py-3 px-8 rounded-tr-3xl rounded-bl-3xl w-fit font-bold uppercase text-[11px] tracking-widest relative z-10 shadow-md">
-                        Objetivos
-                      </div>
-                      <div className="bg-cyan-50 h-1 w-full absolute top-1/2 -z-0"></div>
-                    </div>
-                    <div className="space-y-2">
-                       {['Aumentar masa muscular', 'Reducir el dolor lumbar', 'Mejorar el estado del ánimo', 'Ayudar a la recuperación pos-parto'].map(obj => (
-                         <div key={obj} className="flex items-center gap-3 px-4 py-3 bg-[#E0F7FA] rounded-2xl">
-                            <div className="w-5 h-5 rounded-full border-2 border-[#0097A7] flex items-center justify-center bg-white"><Check className="w-3 h-3 text-[#0097A7]" /></div>
-                            <span className="text-[10px] font-bold text-[#00838F] uppercase">{obj}</span>
-                         </div>
-                       ))}
-                    </div>
-                 </div>
+                  ))}
+                </div>
+                {hasContraindications && (
+                  <div className="bg-rose-500 text-white p-6 rounded-3xl flex items-center gap-4 animate-pulse">
+                    <AlertOctagon className="w-8 h-8 shrink-0" />
+                    <p className="text-xs font-bold uppercase leading-relaxed">Ha marcado factores de riesgo. Debe consultar con su especialista Ceres antes de iniciar cualquier rutina.</p>
+                  </div>
+                )}
               </div>
 
-              {/* Panel 3: Alimentación & Seguridad */}
-              <div className="space-y-10">
+              {/* Recomendaciones Generales Carnet Verde */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                  <div className="space-y-6">
-                    <div className="relative">
-                      <div className="bg-[#0097A7] text-white py-3 px-8 rounded-tr-3xl rounded-bl-3xl w-fit font-bold uppercase text-[11px] tracking-widest relative z-10 shadow-md">
-                        Alimentación & Deporte
-                      </div>
-                      <div className="bg-cyan-50 h-1 w-full absolute top-1/2 -z-0"></div>
+                    <div className="flex items-center gap-3">
+                       <UtensilsCrossed className="w-5 h-5 text-emerald-600" />
+                       <h5 className="text-sm font-black text-slate-800 uppercase tracking-widest">Nutrición & Hidratación</h5>
                     </div>
-                    <div className="bg-white p-6 rounded-[32px] border border-cyan-100 space-y-5">
-                       <div className="flex items-start gap-4">
-                          <Droplets className="w-5 h-5 text-cyan-500 shrink-0" />
-                          <p className="text-[10px] font-bold text-slate-500 leading-relaxed uppercase">Beber 6-8 vasos de líquido, incluyendo agua, cada día.</p>
-                       </div>
-                       <div className="flex items-start gap-4">
-                          <Zap className="w-5 h-5 text-amber-500 shrink-0" />
-                          <p className="text-[10px] font-bold text-slate-500 leading-relaxed uppercase">La necesidad de calorías es más alta (300 más por día).</p>
-                       </div>
-                       <div className="flex items-start gap-4">
-                          <Utensils className="w-5 h-5 text-emerald-500 shrink-0" />
-                          <p className="text-[10px] font-bold text-slate-500 leading-relaxed uppercase">Hidratar antes, durante y después del ejercicio.</p>
-                       </div>
-                    </div>
-                 </div>
-
-                 <div className="space-y-6">
-                    <div className="relative">
-                      <div className="bg-[#D81B60] text-white py-3 px-8 rounded-tr-3xl rounded-bl-3xl w-fit font-bold uppercase text-[11px] tracking-widest relative z-10 shadow-md">
-                        Razones para detenerse
-                      </div>
-                      <div className="bg-rose-50 h-1 w-full absolute top-1/2 -z-0"></div>
-                    </div>
-                    <div className="bg-rose-50 border border-rose-100 p-6 rounded-[32px] space-y-4">
+                    <ul className="space-y-3">
                        {[
-                         'Falta de aliento excesiva',
-                         'Sangrado vaginal',
-                         'Mareos o desmayos',
-                         'Dolor de pecho',
-                         'Contracciones uterinas dolorosas',
-                         'Fuga de líquido de la vagina'
-                       ].map(reason => (
-                         <div key={reason} className="flex items-center gap-3">
-                            <X className="w-4 h-4 text-rose-500 shrink-0" />
-                            <span className="text-[10px] font-bold text-rose-800 uppercase tracking-tight">{reason}</span>
-                         </div>
+                         'No restrinja el consumo de sal.',
+                         'Ingiera 300 kcal extras al día.',
+                         '6 a 8 vasos de agua diarios.',
+                         'Hidratar antes, durante y después.'
+                       ].map((item, i) => (
+                         <li key={i} className="flex items-center gap-3 text-[11px] font-bold text-slate-500 uppercase tracking-tight">
+                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+                            {item}
+                         </li>
                        ))}
+                    </ul>
+                 </div>
+                 <div className="space-y-6">
+                    <div className="flex items-center gap-3">
+                       <Wind className="w-5 h-5 text-emerald-600" />
+                       <h5 className="text-sm font-black text-slate-800 uppercase tracking-widest">Signos de Alarma</h5>
                     </div>
+                    <ul className="space-y-3">
+                       {[
+                         'Falta de aliento excesiva.',
+                         'Contracciones dolorosas (>6/hora).',
+                         'Sangrado o pérdida de líquido.',
+                         'Dolor de cabeza o visión borrosa.'
+                       ].map((item, i) => (
+                         <li key={i} className="flex items-center gap-3 text-[11px] font-bold text-rose-500 uppercase tracking-tight">
+                            <div className="w-1.5 h-1.5 rounded-full bg-rose-500"></div>
+                            {item}
+                         </li>
+                       ))}
+                    </ul>
                  </div>
               </div>
            </div>
            
-           {/* Footer Promo (Matches PDF bottom) */}
-           <div className="p-10 bg-cyan-50 text-center space-y-4 border-t border-cyan-100">
-              <p className="text-[11px] font-serif font-bold text-[#006064] italic">
-                "Buenos hábitos en nutrición y ejercicios son tu mejor beneficio."
-              </p>
-              <div className="flex flex-wrap justify-center gap-4">
-                <button className="bg-[#0097A7] text-white px-10 py-4 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-lg hover:bg-[#006064] transition-all">
-                  Imprimir mi Carnet PDF
-                </button>
-                <button className="bg-white border-2 border-[#0097A7] text-[#0097A7] px-10 py-4 rounded-2xl font-bold text-[10px] uppercase tracking-widest hover:bg-cyan-50 transition-all">
-                  Ver Folletos de Ejercicios
+           {/* Footer con Sello Médico */}
+           <div className="px-8 md:px-12 py-10 bg-emerald-50 border-t border-emerald-100 flex flex-col md:flex-row items-center justify-between gap-10">
+              <div className="flex items-center gap-5">
+                 <div className="w-20 h-20 bg-white rounded-full border-4 border-emerald-200 flex flex-col items-center justify-center text-center shadow-lg relative">
+                    <p className="text-[6px] font-black text-emerald-800 leading-none">AVALADO <br/> SISTEMA</p>
+                    <p className="text-[10px] font-black text-emerald-900 leading-none mt-0.5 tracking-tighter">CERES</p>
+                    <ShieldCheck className="absolute -bottom-1 -right-1 w-6 h-6 text-emerald-600 fill-white" />
+                 </div>
+                 <div>
+                    <p className="text-xs font-black text-emerald-900 uppercase">Carnet de Control de Ejercicio</p>
+                    <p className="text-[9px] font-bold text-emerald-700 uppercase tracking-widest mt-0.5">Vigencia: Todo el periodo gestacional</p>
+                 </div>
+              </div>
+              <div className="flex gap-4 w-full md:w-auto">
+                 <button 
+                  onClick={handlePortarCarnet}
+                  disabled={isExporting}
+                  className="w-full md:w-auto bg-emerald-700 hover:bg-emerald-900 text-white px-10 py-5 rounded-3xl font-black text-xs uppercase tracking-widest shadow-2xl transition-all flex items-center justify-center gap-3 group"
+                >
+                  {isExporting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5" />}
+                  Exportar Carnet Verde
                 </button>
               </div>
-              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest pt-4">
-                © Ceres Mujer - Medellín, Cra 45 N° 6-95, Barrio Patio Bonito
-              </p>
            </div>
         </div>
       )}
+
+      {/* Footer Print Info */}
+      <div className="hidden print:block text-center mt-20 pt-10 border-t border-slate-200">
+         <p className="text-sm font-serif font-bold text-slate-800 italic">"Ceres - Tu acompañamiento clínico experto en salud y bienestar materno."</p>
+         <p className="text-[10px] text-slate-400 mt-2">Reporte Digital Certificado - Sistema Ceres Mujer {new Date().getFullYear()}</p>
+         <p className="text-[8px] text-slate-300 mt-1 uppercase">Cra 45 N° 6- 95, Medellín, Barrio Patio Bonito | Tel: 2662783</p>
+      </div>
     </div>
   );
 };
