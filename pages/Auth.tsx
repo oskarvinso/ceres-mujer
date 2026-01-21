@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
-import { Lock, ArrowRight } from 'lucide-react';
+import { Lock, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
 import { Logo } from '../App.tsx';
+import { apiService } from '../services/apiService.ts';
 
 interface AuthProps {
   onLogin: () => void;
@@ -10,73 +11,93 @@ interface AuthProps {
 const Auth: React.FC<AuthProps> = ({ onLogin }) => {
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (code.length >= 4) {
+    if (!code) return;
+    
+    setLoading(true);
+    setError('');
+    
+    try {
+      const response = await apiService.login(code);
+      localStorage.setItem('ceres_token', response.token);
+      localStorage.setItem('ceres_auth', 'true');
+      
+      // Si el backend dice que ya tiene perfil, lo marcamos
+      if (response.has_profile) {
+        localStorage.setItem('ceres_profile', 'true');
+      }
+      
       onLogin();
-    } else {
-      setError('Código de paciente no válido. Por favor verifica tus documentos Ceres.');
+    } catch (err: any) {
+      console.error(err);
+      setError('Error de conexión o código inválido. Por favor intenta de nuevo.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-ceres-light flex items-center justify-center p-6 relative overflow-hidden">
-      {/* Decorative Background Elements */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-ceres-primary/5 rounded-full -mr-48 -mt-48 blur-3xl"></div>
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-ceres-secondary/5 rounded-full -ml-48 -mb-48 blur-3xl"></div>
       
       <div className="max-w-md w-full relative z-10">
         <div className="bg-white rounded-[50px] shadow-2xl shadow-ceres-primary/10 overflow-hidden border border-white">
-          <div className="p-12 text-center space-y-10">
+          <div className="p-10 text-center space-y-10">
             <div className="flex flex-col items-center">
-              <Logo className="h-28 mb-4" />
-              <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-ceres-primary">Portal de Pacientes</p>
+              <Logo className="h-24 mb-4" />
+              <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-ceres-primary">Portal de Pacientes Ceres</p>
             </div>
 
             <div className="space-y-3">
-              <h2 className="text-2xl font-serif font-bold text-slate-800">Bienvenida</h2>
+              <h2 className="text-2xl font-serif font-bold text-slate-800">Acceso Seguro</h2>
               <p className="text-slate-400 text-sm font-medium leading-relaxed">
-                Ingresa tu código de identificación para acceder a tu seguimiento prenatal personalizado.
+                Ingresa tu código de paciente para sincronizar tu historial médico.
               </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-8">
               <div className="space-y-3 text-left">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-3">Código Ceres</label>
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-3">Código de Identificación</label>
                 <div className="relative group">
-                  <Lock className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-focus-within:text-ceres-primary transition-colors" />
+                  <Lock className={`absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors ${loading ? 'text-slate-200' : 'text-slate-300 group-focus-within:text-ceres-primary'}`} />
                   <input 
                     type="text" 
                     value={code}
-                    onChange={(e) => setCode(e.target.value)}
+                    disabled={loading}
+                    onChange={(e) => setCode(e.target.value.toUpperCase())}
                     placeholder="CERES-XXXX"
-                    className="w-full pl-16 pr-8 py-5 bg-slate-50 border border-slate-100 rounded-3xl focus:ring-4 focus:ring-ceres-mint focus:bg-white outline-none transition-all text-xl font-mono tracking-widest text-center"
+                    className="w-full pl-16 pr-8 py-5 bg-slate-50 border border-slate-100 rounded-3xl focus:ring-4 focus:ring-ceres-mint focus:bg-white outline-none transition-all text-xl font-mono tracking-widest text-center disabled:opacity-50"
                   />
                 </div>
-                {error && <p className="text-rose-500 text-xs mt-3 ml-3 font-bold">{error}</p>}
+                {error && (
+                  <div className="flex items-center gap-2 text-rose-500 text-xs mt-3 ml-3 font-bold animate-in fade-in">
+                    <AlertCircle className="w-4 h-4" />
+                    {error}
+                  </div>
+                )}
               </div>
 
               <button 
                 type="submit"
-                className="w-full bg-ceres-dark hover:bg-slate-900 text-white py-6 rounded-3xl font-bold tracking-[0.2em] text-xs flex items-center justify-center gap-4 transition-all shadow-xl shadow-ceres-dark/20 group"
+                disabled={loading || !code}
+                className="w-full bg-ceres-primary hover:bg-ceres-dark disabled:bg-slate-200 text-white py-6 rounded-3xl font-bold tracking-[0.2em] text-xs flex items-center justify-center gap-4 transition-all shadow-xl shadow-ceres-primary/20 group"
               >
-                ACCEDER AL SISTEMA
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                {loading ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <>
+                    INICIAR SESIÓN
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </>
+                )}
               </button>
             </form>
-
-            <div className="pt-6 border-t border-slate-50">
-              <p className="text-[9px] text-slate-300 font-bold uppercase tracking-widest">
-                Seguridad Encriptada Grado Médico
-              </p>
-            </div>
           </div>
         </div>
-        
-        <p className="mt-10 text-center text-xs text-slate-400 font-medium">
-          ¿Problemas con tu acceso? <span className="text-ceres-primary font-bold cursor-pointer hover:underline">Soporte Ceres</span>
-        </p>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { HashRouter, Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
 import { 
   Heart, 
@@ -16,21 +16,15 @@ import {
 
 import Dashboard from './pages/Dashboard.tsx';
 import HealthTracker from './pages/HealthTracker.tsx';
+import MedicalAnalysis from './pages/MedicalAnalysis.tsx';
+import VirtualCard from './pages/VirtualCard.tsx';
 import Shop from './pages/Shop.tsx';
 import Wellness from './pages/Wellness.tsx';
 import Education from './pages/Education.tsx';
 import Auth from './pages/Auth.tsx';
 import ProfileSetup from './pages/ProfileSetup.tsx';
-import VirtualCard from './pages/VirtualCard.tsx';
-import MedicalAnalysis from './pages/MedicalAnalysis.tsx';
+import { apiService } from './services/apiService.ts';
 
-/**
- * Componente de Logo Oficial de Ceres Mujer
- * Basado fielmente en la imagen de marca proporcionada:
- * - Emblema de madre e hijo abrazados.
- * - Paleta de colores púrpura real y magenta vibrante.
- * - Tipografía Serif elegante para el nombre principal.
- */
 export const Logo = ({ className = "h-16" }: { className?: string }) => (
   <div className={`flex items-center gap-4 ${className}`}>
     <div className="h-full aspect-square relative shrink-0">
@@ -45,21 +39,14 @@ export const Logo = ({ className = "h-16" }: { className?: string }) => (
             <stop offset="100%" stopColor="#880E4F" />
           </linearGradient>
         </defs>
-        
-        {/* Envolvente protector (Swoosh) */}
         <path d="M75 15 C 95 30 95 70 75 85 C 55 100 20 90 10 70" stroke="url(#purpleGradient)" strokeWidth="2" strokeLinecap="round" opacity="0.3" />
         <path d="M80 25 C 95 40 95 65 80 80" stroke="url(#magentaGradient)" strokeWidth="1.5" strokeLinecap="round" opacity="0.4" />
-
-        {/* Figura de la Madre (Púrpura) */}
         <circle cx="28" cy="35" r="12" fill="url(#purpleGradient)" />
         <path d="M10 65 C 10 50 25 45 40 45 C 55 45 65 55 65 75 C 65 95 45 105 25 95 C 10 85 10 75 10 65" fill="url(#purpleGradient)" />
-
-        {/* Figura del Hijo (Magenta) */}
         <circle cx="48" cy="48" r="8" fill="url(#magentaGradient)" />
         <path d="M38 78 C 38 68 45 62 55 62 C 65 62 72 68 72 82 C 72 92 62 98 52 94 C 42 90 38 85 38 78" fill="url(#magentaGradient)" />
       </svg>
     </div>
-    
     <div className="flex flex-col justify-center">
       <h1 className="font-serif text-3xl font-bold text-[#4A148C] leading-none tracking-tight">Ceres</h1>
       <div className="flex flex-col mt-0.5">
@@ -89,11 +76,8 @@ const Navbar = ({ onLogout }: { onLogout: () => void }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-24">
           <div className="flex items-center">
-            <Link to="/">
-              <Logo className="h-16" />
-            </Link>
+            <Link to="/"><Logo className="h-16" /></Link>
           </div>
-          
           <div className="hidden lg:flex items-center space-x-2">
             {navItems.map((item) => (
               <Link
@@ -109,51 +93,13 @@ const Navbar = ({ onLogout }: { onLogout: () => void }) => {
                 {item.label}
               </Link>
             ))}
-            <button 
-              onClick={onLogout}
-              className="ml-4 p-2.5 text-slate-300 hover:text-rose-500 transition-colors"
-              title="Cerrar sesión"
-            >
-              <X className="w-5 h-5" />
-            </button>
+            <button onClick={onLogout} className="ml-4 p-2.5 text-slate-300 hover:text-rose-500 transition-colors"><X className="w-5 h-5" /></button>
           </div>
-
           <div className="lg:hidden flex items-center">
-            <button onClick={() => setIsOpen(!isOpen)} className="text-ceres-dark p-2">
-              {isOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
-            </button>
+            <button onClick={() => setIsOpen(!isOpen)} className="text-ceres-dark p-2"><Menu className="w-7 h-7" /></button>
           </div>
         </div>
       </div>
-
-      {isOpen && (
-        <div className="lg:hidden bg-white border-t border-ceres-mint py-6 shadow-2xl animate-in slide-in-from-top-4">
-          <div className="flex flex-col gap-1 px-4">
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                onClick={() => setIsOpen(false)}
-                className={`flex items-center gap-4 px-6 py-4 rounded-2xl text-sm font-bold tracking-wide transition-all ${
-                  location.pathname === item.path
-                    ? 'bg-ceres-primary text-white'
-                    : 'text-slate-600 hover:bg-ceres-mint'
-                }`}
-              >
-                <item.icon className="w-5 h-5" />
-                {item.label}
-              </Link>
-            ))}
-            <button 
-              onClick={onLogout}
-              className="flex items-center gap-4 px-6 py-4 mt-2 text-rose-500 font-bold"
-            >
-              <X className="w-5 h-5" />
-              Cerrar Sesión
-            </button>
-          </div>
-        </div>
-      )}
     </nav>
   );
 };
@@ -162,29 +108,19 @@ const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => localStorage.getItem('ceres_auth') === 'true');
   const [hasProfile, setHasProfile] = useState<boolean>(() => !!localStorage.getItem('ceres_profile'));
 
-  const handleLogin = () => {
-    setIsAuthenticated(true);
-    localStorage.setItem('ceres_auth', 'true');
-  };
-
   const handleLogout = () => {
     setIsAuthenticated(false);
     setHasProfile(false);
-    localStorage.removeItem('ceres_auth');
-    localStorage.removeItem('ceres_profile');
-    localStorage.removeItem('ceres_risk');
-  };
-
-  const handleProfileComplete = () => {
-    setHasProfile(true);
+    localStorage.clear();
+    window.location.hash = '#/';
   };
 
   if (!isAuthenticated) {
-    return <Auth onLogin={handleLogin} />;
+    return <Auth onLogin={() => setIsAuthenticated(true)} />;
   }
 
   if (!hasProfile) {
-    return <ProfileSetup onComplete={handleProfileComplete} />;
+    return <ProfileSetup onComplete={() => setHasProfile(true)} />;
   }
 
   return (
@@ -206,22 +142,7 @@ const App: React.FC = () => {
         <footer className="bg-white border-t border-ceres-mint py-20 px-4">
           <div className="max-w-7xl mx-auto flex flex-col items-center text-center space-y-10">
             <Logo className="h-28" />
-            <p className="text-slate-400 text-sm max-w-lg leading-relaxed font-medium">
-              Especialistas en ecografía a domicilio y salud integral para la mujer. <br/>
-              Acompañándote en el viaje más importante de tu vida con la mejor tecnología y calidez humana.
-            </p>
-            <div className="flex gap-8 text-[10px] font-bold uppercase tracking-[0.2em] text-ceres-primary">
-              <a href="#" className="hover:text-ceres-dark transition-colors">Servicios</a>
-              <a href="#" className="hover:text-ceres-dark transition-colors">Nosotros</a>
-              <a href="#" className="hover:text-ceres-dark transition-colors">Soporte</a>
-            </div>
-            <div className="pt-8 border-t border-ceres-mint w-full flex flex-col md:flex-row justify-between items-center gap-4 text-[9px] text-slate-300 font-bold tracking-widest uppercase">
-              <span>© 2024 Ceres Mujer - Ginecología y Obstetricia</span>
-              <div className="flex gap-6">
-                <span>Protección de Datos</span>
-                <span>Terminos & Condiciones</span>
-              </div>
-            </div>
+            <p className="text-slate-400 text-[9px] font-bold uppercase tracking-widest">Ceres - Ser Mujer | Ginecología y Obstetricia</p>
           </div>
         </footer>
       </div>
